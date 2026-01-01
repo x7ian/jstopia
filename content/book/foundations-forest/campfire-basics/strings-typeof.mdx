@@ -1,0 +1,120 @@
+# Strings & typeof
+
+You are at the campfire. Before building big things, you need to look at a value and say: "what are you?"
+
+<DocBlock anchor="strings-primitive" kind="explanation" title="Strings: primitive values">
+
+A **primitive string** is text: `"hello"`, `'JS'`, `` `template` ``.
+
+- Strings have properties and methods (like `.length`, `.toUpperCase()`), even though they are primitives.
+- This works because JavaScript can temporarily wrap the value to give you method access.
+
+**Mental model:** *Primitive string != String object.*
+
+</DocBlock>
+
+<DocBlock anchor="string-length" kind="rule" title="String length">
+
+`.length` returns how many characters are in the string.
+
+```js
+"hello".length // 5
+"".length     // 0
+```
+
+<Callout kind="note" title="Unicode">
+Some Unicode symbols can count differently than expected. We cover that later.
+</Callout>
+
+</DocBlock>
+
+<DocBlock anchor="template-literals" kind="example" title="Template literals">
+
+Template literals use backticks and allow expression interpolation:
+
+```js
+const name = "Ada";
+`Hello ${name}` // "Hello Ada"
+```
+
+- Inside `${...}` you can place any expression.
+- Backticks allow multi-line strings.
+
+</DocBlock>
+
+<DocBlock anchor="typeof-string" kind="explanation" title="typeof and types">
+
+`typeof` returns a **type label** as a lowercase string.
+
+```js
+typeof "Hello"    // "string"
+typeof 42         // "number"
+typeof true       // "boolean"
+typeof undefined  // "undefined"
+typeof Symbol()   // "symbol"
+typeof 10n        // "bigint"
+typeof function(){} // "function"
+typeof {}         // "object"
+```
+
+**Mental model:** `typeof` is a quick scanner for a value.
+
+</DocBlock>
+
+<DocBlock anchor="wrapper-string-object" kind="gotcha" title="Wrapper objects: new String(...)">
+
+`new String("hi")` creates an **object** (wrapper), not a primitive.
+
+```js
+typeof "hi"              // "string"
+typeof new String("hi")  // "object"
+typeof String("hi")      // "string"  (conversion, no new)
+```
+
+<Callout kind="tip" title="Tip">
+Avoid `new String(...)` unless you have a special reason.
+</Callout>
+
+</DocBlock>
+
+<DocBlock anchor="typeof-null" kind="gotcha" title="Historical gotcha: typeof null">
+
+There is a famous quirk:
+
+```js
+typeof null // "object"
+```
+
+<Callout kind="warning" title="Historical quirk">
+This behavior is a historical language bug kept for compatibility.
+</Callout>
+
+To detect `null` correctly:
+
+```js
+value === null
+```
+
+To detect a real object (not null):
+
+```js
+value !== null && typeof value === "object"
+```
+
+</DocBlock>
+
+<DocBlock anchor="campfire-checklist" kind="note" title="Campfire checklist">
+
+<Checklist items={[
+  'I know "text" is a primitive.',
+  'I use `.length` for length.',
+  'I understand `typeof` labels.',
+  'I know `typeof null` is "object" (quirk).',
+  'I avoid `new String(...)`.'
+]} />
+
+<MiniChallenge title="Mini challenge" hint="Try comparing typeof on primitives vs wrappers.">
+Pick two values and predict the `typeof` output before you run it.
+</MiniChallenge>
+
+</DocBlock>

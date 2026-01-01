@@ -1,13 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --bg-0: #0b0f1a;
+  --bg-1: #141a2a;
+  --panel: rgba(10, 16, 32, 0.55);
+  --panel-strong: rgba(14, 22, 40, 0.75);
+  --border: rgba(148, 163, 184, 0.28);
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent2: #a78bfa;
+  --app-bg: var(--bg-0);
+  --app-fg: var(--text);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme='forest'] {
+  --bg-0: #0b1a12;
+  --bg-1: #0f2a1a;
+  --panel: rgba(10, 30, 18, 0.55);
+  --panel-strong: rgba(12, 36, 22, 0.78);
+  --border: rgba(74, 222, 128, 0.28);
+  --text: #e8fff0;
+  --muted: #b6f0c2;
+  --accent: #22c55e;
+  --accent2: #f59e0b;
+}
+
+[data-theme='space'] {
+  --bg-0: #0b0f1a;
+  --bg-1: #141a2a;
+  --panel: rgba(10, 16, 32, 0.55);
+  --panel-strong: rgba(14, 22, 40, 0.75);
+  --border: rgba(148, 163, 184, 0.28);
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent2: #a78bfa;
 }
 
 html,
@@ -17,17 +48,28 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background-color: var(--app-bg);
+  color: var(--app-fg);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+body.topic-layout .site-header {
+  display: none;
+}
+
+body.journey-layout .site-header {
+  display: none;
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 a {
@@ -35,8 +77,97 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+.glass {
+  backdrop-filter: blur(12px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
+}
+
+.glass-strong {
+  backdrop-filter: blur(14px);
+  background: var(--panel-strong);
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  box-shadow: 0 20px 55px rgba(2, 6, 23, 0.45);
+}
+
+.glow {
+  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #081022;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.bg-starfield {
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.5), transparent 60%),
+    radial-gradient(1px 1px at 120px 80px, rgba(255, 255, 255, 0.35), transparent 60%),
+    radial-gradient(1px 1px at 220px 140px, rgba(255, 255, 255, 0.3), transparent 60%),
+    radial-gradient(2px 2px at 320px 220px, rgba(255, 255, 255, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 420px 60px, rgba(255, 255, 255, 0.3), transparent 60%),
+    radial-gradient(1px 1px at 520px 180px, rgba(255, 255, 255, 0.35), transparent 60%),
+    radial-gradient(2px 2px at 620px 320px, rgba(255, 255, 255, 0.35), transparent 60%),
+    radial-gradient(1px 1px at 720px 260px, rgba(255, 255, 255, 0.25), transparent 60%),
+    radial-gradient(2px 2px at 820px 100px, rgba(255, 255, 255, 0.4), transparent 60%);
+  animation: star-drift 40s linear infinite;
+}
+
+@keyframes star-drift {
+  from {
+    background-position: 0 0;
   }
+  to {
+    background-position: 300px 600px;
+  }
+}
+
+@keyframes floatSlow {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-starfield {
+    animation: none;
+  }
+  .float-slow {
+    animation: none;
+  }
+}
+
+.float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
 }

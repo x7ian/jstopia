@@ -1,0 +1,70 @@
+---
+title: "The Loop"
+pageSlug: "javascriptopia-vanillaland-foundations/prologue-browser-wars-tools/prologue-loop"
+estimatedMinutes: 9
+objectives:
+  - "Explain the event loop in simple terms"
+  - "Describe the call stack"
+  - "Distinguish task queue vs microtask queue"
+  - "Predict simple execution order"
+---
+
+
+
+The loop is the scheduler that decides what runs next.
+It keeps your program moving, one task at a time.
+Understanding it prevents surprises.
+
+<DocBlock anchor="the-loop-in-one-minute" kind="explanation" title="The loop in one minute">
+The loop watches the call stack.
+When the stack is empty, it pulls the next task or microtask.
+It repeats forever while the runtime is alive.
+</DocBlock>
+
+<DocBlock anchor="call-stack" kind="rule" title="Call stack">
+The call stack is where functions wait their turn.
+Functions are pushed on top, then popped when done.
+If the stack is busy, nothing else can run.
+</DocBlock>
+
+<DocBlock anchor="task-queue" kind="rule" title="Task queue">
+Tasks are bigger scheduled jobs: timers, UI events, IO callbacks.
+The loop pulls tasks when the stack is empty.
+</DocBlock>
+
+<DocBlock anchor="microtask-queue" kind="rule" title="Microtask queue">
+Microtasks are small, high-priority jobs: Promise callbacks.
+After a task finishes, the loop runs all microtasks before the next task.
+</DocBlock>
+
+<DocBlock anchor="microtasks-vs-tasks-example" kind="example" title="Microtasks vs tasks example">
+```js
+console.log('A');
+setTimeout(() => console.log('B'), 0);
+Promise.resolve().then(() => console.log('C'));
+console.log('D');
+```
+
+Expected order:
+A, D, C, B
+</DocBlock>
+
+<DocBlock anchor="why-this-matters" kind="explanation" title="Why this matters">
+Async bugs often come from incorrect mental timing.
+If you know the loop, you can predict order and avoid surprises.
+
+<Callout kind="tip" title="Further reading">
+  Event loop deep dive: https://javascript.info/event-loop
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="campfire-checklist" kind="rule" title="Campfire Checklist">
+<Checklist
+items={[
+  "I can describe the loop at a high level",
+  "I know what the call stack is",
+  "I can explain tasks vs microtasks",
+  "I can predict a simple A D C B order"
+]}
+/>
+</DocBlock>

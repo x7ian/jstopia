@@ -1,0 +1,69 @@
+---
+title: "The Runtime"
+pageSlug: "javascriptopia-vanillaland-foundations/prologue-browser-wars-tools/prologue-runtime"
+estimatedMinutes: 8
+objectives:
+  - "Define what a JavaScript runtime is"
+  - "Compare browser and Node runtimes"
+  - "Recognize that APIs differ by environment"
+  - "Avoid the myth that JS is the same everywhere"
+---
+
+# The Runtime
+
+The runtime is the world your code lives in.
+Different worlds give different tools.
+This is why the same code can feel different in the browser vs Node.
+
+<DocBlock anchor="what-is-runtime" kind="explanation" title="What is a runtime?">
+A runtime is the environment that runs your JavaScript.
+It provides the engine, the event loop, and extra APIs.
+JavaScript is the language, the runtime is the city it runs in.
+</DocBlock>
+
+<DocBlock anchor="browser-runtime-vs-node-runtime" kind="example" title="Browser runtime vs Node runtime">
+Browsers provide DOM APIs, windows, and visual events.
+Node provides file system, servers, and system access.
+Same language, different tools.
+</DocBlock>
+
+<DocBlock anchor="apis-provided-by-runtime" kind="rule" title="APIs provided by the runtime">
+The runtime gives you extra abilities.
+In the browser you get DOM, fetch, and events.
+In Node you get fs, path, and process.
+
+<Callout kind="example" title="Example">
+  fetch exists in browsers by default, while fs exists in Node. They are different tools.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="common-mistakes" kind="warning" title="Common mistakes">
+A common mistake is to assume every API exists everywhere.
+Code that runs in a browser can fail in Node, and vice versa.
+Always check the environment.
+
+<Callout kind="warning" title="Reality check">
+  "JavaScript" is not a single environment. The runtime decides what is possible.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="mini-challenges" kind="example" title="Mini-challenges">
+<MiniChallenge title="Try it">
+  You are writing code that needs to read a file. Which runtime would you choose?
+</MiniChallenge>
+
+<MiniChallenge title="Try it">
+  You need to update the text of a button on a web page. Which runtime is required?
+</MiniChallenge>
+</DocBlock>
+
+<DocBlock anchor="campfire-checklist" kind="rule" title="Campfire Checklist">
+<Checklist
+items={[
+  "I can explain what a runtime is",
+  "I can name one browser API and one Node API",
+  "I know runtimes provide different tools",
+  "I do not assume the same APIs exist everywhere"
+]}
+/>
+</DocBlock>

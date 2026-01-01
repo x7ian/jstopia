@@ -1,0 +1,206 @@
+# Constants with const
+
+You tighten your campfire knots and choose a steady path.
+In Data Forest, const is your anchor rope: it keeps important bindings from drifting.
+
+## Objectives
+- Declare constants with const and explain why const is preferred by default.
+- Distinguish reassignment vs mutation for arrays and objects.
+- Decide when to use const vs let in real code.
+- Apply naming conventions for everyday const variables and true constants.
+- Avoid common mistakes like missing initializers and reassignment errors.
+- Recognize const scope and TDZ behavior at a practical level.
+
+<DocBlock anchor="what-is-const" kind="explanation" title="What is const?">
+`const` creates a **block-scoped binding** that cannot be reassigned.
+
+```js
+const campName = "Oak Trail";
+// campName = "River Bend"; // not allowed
+```
+
+<Callout kind="tip" title="Mindset">
+Think "binding stays put". The name is locked, not the value itself.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="const-requires-initializer" kind="warning" title="const must be initialized">
+A const must be **assigned immediately**. This is a syntax error:
+
+```js
+const total; // SyntaxError
+```
+
+Valid form:
+
+```js
+const total = 0;
+```
+
+<Callout kind="warning" title="Initializer required">
+`const x;` is invalid because const declarations require a value at declaration time.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="when-to-use-const" kind="rule" title="When to use const (default choice)">
+Use `const` by default. Switch to `let` only if you truly need reassignment.
+
+```js
+const theme = "forest";
+let steps = 0;
+steps += 1;
+```
+
+<Callout kind="tip" title="Default choice">
+Start with `const`. If you need to rebind, change it to `let`.
+</Callout>
+
+<Playground
+  title="Anchor Rope: const in action"
+  showPreview={false}
+  files={[
+    { name: "main.js", language: "js", content: `const PI = 3.14159;
+let radius = 4;
+const circumference = 2 * PI * radius;
+console.log(\`Radius \${radius} → \${circumference.toFixed(2)}\`);
+console.log(\`Circumference: \${circumference.toFixed(2)}\`);` },
+  ]}
+/>
+</DocBlock>
+
+<DocBlock anchor="const-vs-let-decision" kind="example" title="Choosing between const and let">
+Use `let` for counters or loop indices that change. Use `const` for stable references.
+
+```js
+let count = 0;
+count++;
+
+const player = { name: "Ada" };
+player.name = "Lin"; // allowed
+```
+</DocBlock>
+
+<DocBlock anchor="reassignment-vs-mutation" kind="gotcha" title="Reassignment vs mutation">
+`const` prevents **reassignment**, not **mutation**.
+
+```js
+const treasure = { gems: 3 };
+treasure.gems = 4; // allowed (mutation)
+```
+
+```js
+const treasure = { gems: 3 };
+treasure = { gems: 4 }; // TypeError
+```
+
+<Callout kind="warning" title="Important">
+Changing object properties is allowed, but reassigning the variable is not.
+</Callout>
+
+<Playground
+  title="Mutation vs Reassignment"
+  showPreview={false}
+  files={[
+    { name: "main.js", language: "js", content: `const settings = { theme: "forest" };
+settings.theme = "night";
+console.log(\`theme: \${settings.theme}\`);
+// Uncomment to see the error:
+// settings = {};`},
+  ]}
+/>
+</DocBlock>
+
+<DocBlock anchor="const-with-objects-arrays" kind="example" title="const with objects and arrays">
+Arrays and objects can change internally even if the binding is const.
+
+```js
+const tools = ["map"];
+tools.push("torch");
+```
+
+```js
+const hero = { hp: 10 };
+hero.hp = 12;
+```
+
+Reassigning the array or object itself still throws an error.
+</DocBlock>
+
+<DocBlock anchor="naming-constants" kind="rule" title="Naming conventions (avoid typos)">
+Most const variables use **camelCase**. Reserve **UPPER_SNAKE_CASE** for true constants.
+
+```js
+const playerLives = 3;
+const MAX_LEVEL = 12;
+```
+
+<Callout kind="tip" title="Tips to avoid typos">
+Use descriptive names, avoid confusing characters like l/I/O/0, and keep naming consistent across files.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="common-mistakes-const" kind="warning" title="Common mistakes & misconceptions">
+A common myth: "const means immutable". It only locks the binding.
+
+```js
+const config = { mode: "easy" };
+config.mode = "hard"; // allowed
+```
+
+```js
+const config = { mode: "easy" };
+config = { mode: "hard" }; // TypeError
+```
+
+<Callout kind="warning" title="Watch out">
+Block scope matters: a const declared inside a block does not exist outside it.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="micro-challenges" kind="example" title="Micro-challenges">
+<MiniChallenge title="Try it">
+Predict the output:
+
+```js
+const coins = [1, 2];
+coins.push(3);
+console.log(coins.length);
+```
+</MiniChallenge>
+
+<MiniChallenge title="Try it">
+Is this allowed?
+
+```js
+const level;
+```
+</MiniChallenge>
+
+<MiniChallenge title="Try it">
+What is logged?
+
+```js
+const name = "Forest";
+try {
+  name = "River";
+} catch (e) {
+  console.log(e.name);
+}
+```
+</MiniChallenge>
+</DocBlock>
+
+<DocBlock anchor="campfire-checklist" kind="rule" title="Campfire Checklist">
+<Checklist
+items={[
+"I can declare const with an initializer.",
+"I know const is block-scoped.",
+"I understand reassignment vs mutation.",
+"I use const by default and let only when needed.",
+"I know const does not mean immutable.",
+"I use camelCase for most const variables.",
+"I reserve UPPER_SNAKE_CASE for true constants.",
+"I avoid accidental reassignment errors.",
+]}
+/>
+</DocBlock>

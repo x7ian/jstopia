@@ -1,0 +1,217 @@
+# Variables with let and var
+
+You sit by the campfire and gather your supplies. In Data Forest, every value needs a name.
+Today you learn how to store, update, and reason about variables without getting lost in the trees.
+
+## Objectives
+- Declare, initialize, and update variables.
+- Explain the difference between let and var at a practical level.
+- Apply safe naming rules (camelCase, descriptive names).
+- Predict scoping behavior for let vs var (block vs function/global).
+- Avoid common mistakes like redeclaration and accidental globals.
+
+<DocBlock anchor="what-is-a-variable" kind="explanation" title="What is a variable?">
+A variable is a **named container** for a value. You can read the value and write a new one later.
+
+```js
+let food = "berries";
+console.log(food); // "berries"
+food = "mushrooms";
+```
+
+<Callout kind="tip" title="Idea">
+Think of a variable as a label stuck to a box. You can swap what is inside the box.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="declaring-vs-initializing" kind="rule" title="Declaring vs initializing">
+Declaring creates the variable. Initializing gives it its first value.
+
+```js
+let score;        // declared, not initialized
+score = 10;       // now initialized
+
+let lives = 3;    // declared + initialized
+```
+
+<Callout kind="note" title="Rule of thumb">
+Initialize as soon as you know the first value. It reduces bugs later.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="let-basics" kind="example" title="let: modern variable">
+Use `let` for values that will change. It allows reassignment and is block-scoped.
+
+```js
+let stamina = 5;
+stamina = stamina + 1;
+```
+
+<Callout kind="tip" title="Default choice">
+Prefer `let` for reassignable variables. It behaves predictably in blocks.
+</Callout>
+
+<Callout kind="note" title="What is the console?">
+The console is a developer log that shows messages from your code. `console.log()` prints a value so you can see it while you learn and debug.
+</Callout>
+
+<Playground
+  title="Campfire Pack: Variables"
+  showPreview={false}
+  files={[
+    { name: "main.js", language: "js", content: `const name = "Ada";
+let score = 0;
+console.log(\`\${name} score: \${score}\`);
+score = score + 5;
+console.log(\`Score is now \${score}\`);` },
+  ]}
+/>
+</DocBlock>
+
+<DocBlock anchor="var-basics" kind="example" title="var: legacy behavior">
+`var` is function-scoped and hoisted in ways that can surprise you.
+
+```js
+function camp() {
+  if (true) {
+    var torch = "lit";
+  }
+  console.log(torch); // "lit"
+}
+```
+
+<Callout kind="warning" title="Legacy">
+Avoid `var` in new code unless you are maintaining older codebases.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="block-scope-vs-function-scope" kind="gotcha" title="Scope difference: block vs function">
+`let` respects block boundaries. `var` ignores them.
+
+```js
+if (true) {
+  let apples = 3;
+  var berries = 4;
+}
+
+// apples is NOT accessible here
+console.log(berries); // 4
+```
+
+<Callout kind="gotcha" title="Scope">
+Use `let` when you want a variable to disappear after a block ends.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="hoisting-high-level" kind="gotcha" title="Hoisting (high-level, practical)">
+`var` is hoisted and initialized to `undefined`. `let` exists in the temporal dead zone (TDZ).
+
+```js
+console.log(pack); // undefined
+var pack = "rope";
+```
+
+```js
+console.log(map); // ReferenceError
+let map = "trail";
+```
+
+<Callout kind="gotcha" title="Why errors happen">
+Accessing a `let` variable before declaration throws because it is not ready yet.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="naming-and-typo-tips" kind="rule" title="Naming & typo prevention tips">
+Use descriptive, camelCase names and avoid confusing characters.
+
+```js
+let totalCoins = 12;
+let playerHealth = 80;
+```
+
+<Callout kind="tip" title="Naming tips">
+- Use camelCase for variables and functions.
+- Reserve UPPER_SNAKE_CASE for constants later.
+- Avoid confusing names like l/I/O/0.
+- Descriptive names beat short ones.
+</Callout>
+
+<p>Try changing the variable names or values, then run the code. Reset when you want the original setup back.</p>
+
+<Playground
+  title="Rename & Reassign"
+  showPreview={false}
+  files={[
+    { name: "main.js", language: "js", content: `let name = "Ada";
+let score = 10;
+score = score + 1;
+console.log(\`\${name} — Level \${score}\`);
+console.log(\`\${name} leveled up!\`);` },
+  ]}
+/>
+</DocBlock>
+
+<DocBlock anchor="common-mistakes" kind="warning" title="Common mistakes">
+Avoid accidental globals, redeclarations, and confusing shadowing.
+
+```js
+score = 10; // accidental global if you forget let/const/var
+```
+
+```js
+let level = 1;
+let level = 2; // error: redeclaration
+```
+
+<Callout kind="warning" title="Mistakes">
+These mistakes create bugs that are hard to trace. Always declare your variables.
+</Callout>
+</DocBlock>
+
+<DocBlock anchor="micro-challenges" kind="example" title="Micro-challenges">
+Predict the output before you run the code.
+
+<MiniChallenge title="Try it">
+What does this print?
+
+```js
+let steps = 2;
+steps = steps + 3;
+console.log(steps);
+```
+</MiniChallenge>
+
+<MiniChallenge title="Try it">
+What happens here?
+
+```js
+console.log(torch);
+let torch = "on";
+```
+</MiniChallenge>
+
+<MiniChallenge title="Try it">
+Which variable survives the block?
+
+```js
+if (true) {
+  let a = 1;
+  var b = 2;
+}
+```
+</MiniChallenge>
+</DocBlock>
+
+<DocBlock anchor="campfire-checklist" kind="rule" title="Campfire Checklist">
+<Checklist
+items={[
+"I can declare and initialize variables.",
+"I know when to use let vs var.",
+"I can predict block vs function scope.",
+"I understand basic hoisting behavior.",
+"I avoid accidental globals.",
+"I use camelCase and descriptive names.",
+"I avoid confusing characters like l/I/O/0.",
+]}
+/>
+</DocBlock>

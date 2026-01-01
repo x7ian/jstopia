@@ -1,0 +1,62 @@
+---
+title: "Docs Demo"
+pageSlug: "demo"
+estimatedMinutes: 3
+objectives:
+  - "Verify MDX rendering"
+  - "Verify Callouts + CodeBlock"
+  - "Verify anchors scroll + highlight"
+---
+
+# Docs Demo
+
+Jump to:
+- [Warning](#demo-warning)
+- [Code](#demo-code)
+- [Checklist](#demo-checklist)
+
+<DocBlock anchor="demo-warning" kind="warning" title="Callouts">
+
+<Callout kind="warning" title="Warning">
+  This is a warning callout. Use it for pitfalls, quirks, or things that break.
+</Callout>
+
+<Callout kind="tip" title="Tip">
+  This is a tip callout. Use it for quick hints that prevent common mistakes.
+</Callout>
+
+</DocBlock>
+
+<DocBlock anchor="demo-code" kind="example" title="Code Block">
+
+<Callout kind="example" title="Example">
+  This code block should be syntax-highlighted and have a Copy button.
+</Callout>
+
+```js
+export function sum(a, b) {
+  return a + b;
+}
+
+console.log(sum(2, 3)); // 5
+```
+
+</DocBlock>
+
+<DocBlock anchor="demo-challenge" kind="example" title="Mini Challenge">
+
+<MiniChallenge title="Try it"> What is the result of: `typeof "Hello"` ? </MiniChallenge>
+
+</DocBlock>
+
+<DocBlock anchor="demo-checklist" kind="rule" title="Campfire Checklist">
+
+<Checklist
+items={[
+"Callouts render with icons and colors",
+"Code blocks show syntax highlighting and copy works",
+"Anchors scroll correctly and highlight the target section",
+]}
+/>
+
+</DocBlock>

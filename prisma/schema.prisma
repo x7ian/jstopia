@@ -1,0 +1,212 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Difficulty {
+  basic
+  medium
+  advanced
+}
+
+enum QuestionType {
+  mcq
+  code_output
+  code_complete
+  code
+}
+
+enum HelpUsed {
+  none
+  tip
+  doc
+}
+
+enum QuestionPhase {
+  micro
+  quiz
+  boss
+}
+
+enum ProgressStatus {
+  locked
+  unlocked
+  completed
+}
+
+model Book {
+  id              Int      @id @default(autoincrement())
+  slug            String   @unique @db.VarChar(191)
+  title           String   @db.VarChar(191)
+  order           Int      @default(0)
+  storyIntro      String?  @db.Text
+  themeJson       Json?
+  lockedByDefault Boolean  @default(true)
+
+  chapters Chapter[]
+}
+
+model Chapter {
+  id                Int      @id @default(autoincrement())
+  bookId            Int
+  slug              String   @db.VarChar(191)
+  title             String   @db.VarChar(191)
+  order             Int      @default(0)
+  storyIntro        String?  @db.Text
+  themeOverrideJson Json?
+  heroImage         String?  @db.VarChar(512)
+  lockedByDefault   Boolean  @default(true)
+
+  book     Book     @relation(fields: [bookId], references: [id])
+  topics   Topic[]
+  docPages DocPage[]
+
+  @@unique([bookId, slug])
+}
+
+model Topic {
+  id              Int      @id @default(autoincrement())
+  chapterId       Int
+  slug            String   @unique @db.VarChar(191)
+  title           String   @db.VarChar(191)
+  order           Int      @default(0)
+  storyIntro      String?  @db.Text
+  docPageId       Int?    @unique
+  lockedByDefault Boolean  @default(true)
+
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+  docPage   DocPage? @relation("TopicDocPage", fields: [docPageId], references: [id])
+  questions Question[]
+  progress  TopicProgress[]
+  docPages  DocPage[] @relation("DocPageTopic")
+}
+
+model DocPage {
+  id               Int      @id @default(autoincrement())
+  slug             String   @unique @db.VarChar(191)
+  title            String   @db.VarChar(191)
+  mdxPath          String   @db.VarChar(512)
+  chapterId        Int?
+  topicId          Int?
+  objectives       Json?
+  estimatedMinutes Int?
+
+  chapter      Chapter? @relation(fields: [chapterId], references: [id])
+  topic        Topic?   @relation("DocPageTopic", fields: [topicId], references: [id])
+  topicForDoc  Topic?   @relation("TopicDocPage")
+  blocks  DocBlock[]
+  questions Question[]
+
+  @@index([chapterId])
+  @@index([topicId])
+}
+
+model DocBlock {
+  id        Int     @id @default(autoincrement())
+  docPageId Int
+  anchor    String  @db.VarChar(191)
+  title     String? @db.VarChar(191)
+  kind      String  @db.VarChar(32)
+  order     Int     @default(0)
+  excerpt   String? @db.Text
+  contentMd String? @db.LongText
+
+  docPage DocPage @relation(fields: [docPageId], references: [id])
+  answerFor Question[] @relation("AnswerDocBlock")
+
+  @@unique([docPageId, anchor])
+}
+
+model Question {
+  id               Int           @id @default(autoincrement())
+  slug             String        @unique @db.VarChar(191)
+  topicId          Int
+  difficulty       Difficulty
+  type             QuestionType
+  phase            QuestionPhase @default(quiz)
+  rankSlug         String?       @db.VarChar(191)
+  prompt           String        @db.LongText
+  code             String?       @db.LongText
+  choicesJson      Json?
+  filesJson        Json?
+  expectedJson     Json?
+  answer           String        @db.Text
+  tip1             String        @db.Text
+  tip2             String?       @db.Text
+  explanationShort String        @db.LongText
+  docPageId        Int?
+  answerDocBlockId Int?
+  referencesJson   Json?
+
+  topic        Topic    @relation(fields: [topicId], references: [id])
+  docPage      DocPage? @relation(fields: [docPageId], references: [id])
+  answerDocBlock DocBlock? @relation("AnswerDocBlock", fields: [answerDocBlockId], references: [id])
+  attempts     Attempt[]
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique @db.VarChar(191)
+  totalScore   Int      @default(0)
+  rank         String   @default("initiate") @db.VarChar(191)
+  rankUpdatedAt DateTime?
+  currentBookSlug String? @db.VarChar(191)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  attempts      Attempt[]
+  topicProgress TopicProgress[]
+}
+
+model BossExamAttempt {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @db.VarChar(191)
+  bookSlug     String   @db.VarChar(191)
+  rankSlug     String   @db.VarChar(191)
+  passed       Boolean  @default(false)
+  score        Int      @default(0)
+  mastery      Int      @default(0)
+  helpUsedJson Json?
+  createdAt    DateTime @default(now())
+
+  @@index([sessionToken, bookSlug, rankSlug])
+}
+
+model TopicProgress {
+  id           Int            @id @default(autoincrement())
+  sessionToken String         @db.VarChar(191)
+  topicId      Int
+  status       ProgressStatus @default(locked)
+  score        Int            @default(0)
+  completedAt  DateTime?
+
+  session Session @relation(fields: [sessionToken], references: [sessionToken])
+  topic   Topic   @relation(fields: [topicId], references: [id])
+
+  @@unique([sessionToken, topicId])
+}
+
+model Attempt {
+  id          Int      @id @default(autoincrement())
+  sessionToken String  @db.VarChar(191)
+  questionId  Int
+  correct     Boolean
+  selected    String?  @db.Text
+  elapsedMs   Int      @default(0)
+  helpUsed    HelpUsed @default(none)
+  tipCount    Int      @default(0)
+  scoreAwarded Int     @default(0)
+  createdAt   DateTime @default(now())
+
+  session  Session  @relation(fields: [sessionToken], references: [sessionToken])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@index([questionId])
+}

@@ -1,0 +1,50 @@
+---
+title: "Where JavaScript Lives"
+pageSlug: "javascriptopia-vanillaland-foundations/prologue-browser-wars-tools/prologue-where-js-lives"
+estimatedMinutes: 7
+objectives:
+  - "Explain what a browser is at a practical level"
+  - "Describe how JS runs in the browser"
+  - "Describe how JS runs on the server"
+  - "Recognize other runtimes"
+---
+
+# Where JavaScript Lives
+
+JavaScript runs in many places.
+Each place has different powers and limits.
+You should know the basics before you travel.
+
+<DocBlock anchor="what-is-a-browser" kind="explanation" title="What is a browser?">
+A browser is a runtime with a rendering engine and web APIs.
+It reads HTML/CSS, runs JavaScript, and updates the screen.
+Think of it as an app platform for the web.
+</DocBlock>
+
+<DocBlock anchor="js-in-the-browser" kind="example" title="JS in the browser">
+You can load scripts with a script tag or a module.
+The browser provides DOM, fetch, and events.
+Your code reacts to user actions.
+</DocBlock>
+
+<DocBlock anchor="js-on-the-server" kind="example" title="JS on the server">
+Node runs JavaScript outside the browser.
+It can read files, run servers, and automate tasks.
+It has no DOM by default.
+</DocBlock>
+
+<DocBlock anchor="other-runtimes" kind="rule" title="Other runtimes">
+There are more worlds: Deno, edge workers, and embedded runtimes.
+They all run JS but offer different APIs.
+</DocBlock>
+
+<DocBlock anchor="campfire-checklist" kind="rule" title="Campfire Checklist">
+<Checklist
+items={[
+  "I can explain what a browser does",
+  "I know JS can run in the browser and on the server",
+  "I can name at least one other runtime",
+  "I do not assume APIs are identical"
+]}
+/>
+</DocBlock>
