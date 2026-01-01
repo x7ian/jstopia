@@ -1,58 +1,168 @@
-# JS QuizUp — Project Overview
-An approachable description of the game we are building, focused on the player experience rather than the tech stack.
+# JSTopia (JavaScriptopia)
+
+JSTopia (also referred to as **JavaScriptopia**) is a **gamified learning platform** designed to help people master JavaScript through a blend of **interactive “book-style” lessons**, **progressive quizzes**, **missions**, and a visible **progress + rank system** wrapped in an adventure narrative.
+
+The core idea is simple: **read → practice → prove mastery**.  
+Each lesson contains guided documentation (with tips and warnings), interactive examples, and a quiz at the end. As learners complete missions, they earn progress, unlock new content, and rank up toward becoming a **Flux Master** in the JavaScriptopia universe.
 
 ---
 
-## What the game is
-- A JavaScript learning adventure with a visible **skill tree**. Each node represents a topic (e.g., Variables, Functions, Async).
-- Players clear short **quiz rounds** to unlock the next nodes. Rounds are quick: answer a handful of questions, earn points, move on.
-- Difficulty adapts as you play: if you are breezing through, questions get tougher; if you struggle, the game softens and gives clearer feedback.
-- Every question comes with a short explanation so players learn even when they miss.
+## Vision
 
-## How a session feels
-1) Pick the next unlocked node on the skill tree.  
-2) Enter a focused quiz card with four options per question.  
-3) A slim progress bar shows how close you are to finishing the round.  
-4) After each answer you see whether you were right, why, and links to learn more.  
-5) Finish the bar to clear the round, earn points, and unlock the next topics.
+Create an experience that feels like a game (motivating, visual, rewarding) while still functioning as a serious learning course:
 
-## Player goals
-- **Learn fast:** understand core JavaScript ideas without digging through docs.
-- **See progress:** a clear bar for each round and unlocks on the tree.
-- **Stay motivated:** streaks, points, and celebratory moments when a node unlocks.
-- **Return easily:** a review lane surfaces topics that need a refresh.
+- **structured learning paths**
+- **hands-on practice**
+- **fast feedback**
+- **visible progress**
+- **real retention**
+
+The long-term goal is to take a learner from “I don’t know how to code” to confidently understanding and applying JavaScript across multiple environments (browser, CLI, frameworks).
+
+---
+
+## What is JSTopia?
+
+JSTopia is a hybrid of:
+
+- 📘 **Interactive digital book** (content organized as Book → Chapter → Lesson)
+- 🧠 **Quizzes & exams** (progressive difficulty + “boss trials”)
+- 🎮 **Progression game** (mastery bar, unlocks, ranks, gems)
+- 🧪 **Code lab / playground** (editable code with live results)
+- 🗺️ **Narrative journey** (themed worlds: VanillaLand, Browser Ship, ReactLand, etc.)
+
+---
 
 ## Content structure
-- **Fundamentals track:** Variables & Scope, Operators, Functions, Async JavaScript, Arrays & Objects, and more to come.
-- Each topic is broken into a few clear objectives (e.g., let/const/var, hoisting, equality quirks).
-- Questions are short, practical, and avoid trick wording.
 
-## Game rules in plain English
-- A round is a short series of questions. Correct answers push the progress bar forward; wrong answers pull it back a bit. End the round by filling the bar.
-- Unlocking the next node requires showing you can consistently answer across that topic, not just streak once.
-- Points accumulate for streaks and clears; leaderboards can rank weekly and all-time.
-- If you miss a question, you get an explanation plus a quick “try a similar one” option so you can fix the mistake right away.
+Content is organized as a guided “journey”:
 
-## What “adaptive” means here
-- The game keeps an internal sense of how confident it is that you know a topic.
-- If you keep getting a topic right, it offers slightly tougher questions. If you miss, it eases up and gives clearer hints.
-- This keeps rounds challenging but fair and reduces the chance of getting stuck.
+- **Books (Worlds):** major stages of the adventure (e.g., Foundations, Browser, Frameworks)
+- **Chapters:** zones/levels inside a world
+- **Lessons:** learning units combining reading + examples + practice
 
-## Why it’s fun and useful
-- Visual skill tree makes progress obvious.
-- Fast rounds respect time: you can finish one in a couple of minutes.
-- Explanations and linked references turn every mistake into a mini lesson.
-- Points, streaks, and unlocks deliver quick rewards without feeling grindy.
+Example (Book 1):
+- Book 1: *JavaScriptopia — VanillaLand (Foundations)*
+  - Chapter 0: Prologue — The Browser Wars
+  - Chapter 1: Data Forest (variables, types, etc.)
+  - … (more chapters planned)
+  - Future end-of-book chapter: *The Hangar — Tools & Architecture* (runtime, loop, CLI, git, etc.)
 
-## Current slice (MVP focus)
-- One main track: **JavaScript Fundamentals** with a handful of nodes unlocked in order.
-- Quiz flow, explanations, and points are live; unlock logic keeps you moving only when you have evidence you understand the material.
-- Basic leaderboards to compare points; review lane surfaces topics to revisit.
+---
 
-## What’s planned next (player-facing)
-- More nodes beyond Fundamentals (async patterns, performance, testing basics).
-- Smarter review reminders so you come back right before you forget.
-- Achievement badges for milestones like “first perfect round” or “7-day streak.”
-- More visual polish for unlock moments (celebrations, better summaries of what you learned).
+## Game mechanics (core loop)
 
+1) The learner enters a **Lesson**  
+2) Reads “scrollbook” content with sections such as:
+   - explanations
+   - tips / warnings
+   - checklists (“campfire checklist”)
+   - mini challenges  
+3) Jumps to the quiz (or reaches it by scrolling)
+4) The game updates a **segmented mastery meter**:
+   - Correct answer: **+1 segment**
+   - Wrong answer: **−0.5 segment** (less punishing, more motivating)
+5) Completing a chapter **Trial** unlocks the next content
+6) Major milestones grant a **rank gem** (Flux Master ranks)
 
+---
+
+## Flux Master rank system
+
+Learners earn visible ranks represented by **gem assets** (stored under `public/brand/ranks/`).  
+Ranks are awarded based on milestone completions (chapter finals / boss trials).  
+Conceptual rank progression (subject to tuning by book):
+
+- Initiate  
+- Campfire Cadet  
+- Scope Ranger  
+- Stack Adept  
+- Async Apprentice  
+- Runtime Navigator  
+- Flux Architect  
+- Loop Sage  
+
+Each rank is meant to represent **real, practical capability**, similar to belt systems in martial arts.
+
+---
+
+## Interactive code playground
+
+JSTopia includes a “mini IDE” component used for:
+
+- interactive code examples inside lessons
+- “code challenge” questions inside quizzes
+
+Key features:
+- Multi-file editor with tabs (`index.html`, `styles.css`, `main.js`)
+- **Run** button
+- **Reset** button (restores the original starter code)
+- Results preview + console output
+- Safe execution inside a **sandboxed iframe**
+
+This enables high-quality, hands-on learning—beyond multiple-choice quizzes.
+
+---
+
+## Project goals
+
+### Learning goal
+- Guide learners from zero and build a strong foundation through consistent practice.
+- Reduce cognitive overload by teaching advanced “meta” concepts in the right order.
+
+### Product goal
+- Make learning feel rewarding: visible progress, rank rewards, narrative motivation.
+- Evolve into a store-ready app (web-first → app store later).
+
+### Technical goal
+- Scalable content system:
+  - idempotent seeds
+  - doc pages + anchors for “teleport” help
+  - questions linked to specific lesson sections
+  - support for both MCQ and code-based questions
+
+---
+
+## Core features (high level)
+
+- ✅ Journey Tree (Books → Chapters → Lessons) with unlock rules
+- ✅ Scrollbook UI: lesson reading + “Jump to Quiz”
+- ✅ Quiz engine with scoring + mastery meter
+- ✅ Tip / Docs system with anchors (hint first, deeper help on demand)
+- ✅ Boss exams / chapter trials
+- ✅ Rank system (gems)
+- ✅ Code Playground (HTML/CSS/JS) with console + reset
+- ✅ Admin area for managing content/questions (depending on implementation stage)
+
+---
+
+## Roadmap (next steps)
+
+### Content
+- Finish Book 1 (Data Forest lessons + quizzes)
+- Add intermediate chapters (control flow, functions, objects, arrays)
+- Add Book 1 final chapter: *The Hangar — Tools & Architecture*
+
+### Product
+- Optional “Story Mode” vs “Focus Mode”
+- User profile + analytics (weak spots, stats, streaks)
+- Improved status UI (locked/unlocked/completed)
+
+### Technical
+- Production deployment (Linode via Docker/Nginx/SSL)
+- CI pipeline (lint/test/build) + releases
+- More robust code challenge evaluation (lightweight tests)
+
+---
+
+## Licensing & content note
+
+- The project is inspired by well-known educational structures, but content is written in **original wording**.
+- Avoid copying copyrighted text verbatim.
+
+---
+
+## TL;DR
+
+**JSTopia = a JavaScript learning adventure.**  
+An interactive book + quizzes + live code playground + gamified progress, designed to keep learners motivated while they build real JavaScript mastery.
