@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db'
-import { scoreAnswer } from '@/lib/scoring'
+import { computeScoreAwarded } from '@/lib/scoring'
 
 const REQUIRED_CORRECT = 6
 
@@ -12,6 +12,7 @@ export async function POST(req: Request) {
         elapsedMs?: number
         helpUsed?: 'none' | 'tip' | 'doc'
         tipCount?: number
+        bonusScore?: number
       }
     | null
 
@@ -37,7 +38,9 @@ export async function POST(req: Request) {
   const correct = normalizedSelected === normalizedAnswer
 
   const helpUsed = body.helpUsed ?? 'none'
-  const scoreDelta = correct ? scoreAnswer(question.difficulty, helpUsed) : 0
+  const bonusScore = Math.max(0, Number(body.bonusScore ?? 0))
+  const baseScore = computeScoreAwarded({ phase: question.phase, correct, helpUsed })
+  const scoreDelta = question.phase === 'micro' && correct ? baseScore + bonusScore : baseScore
   const isPrologueTrial = question.topic.slug === 'prologue-final-quiz'
 
   await prisma.attempt.create({
@@ -66,7 +69,7 @@ export async function POST(req: Request) {
   let topicCompleted = false
   let unlocked: { nextTopicSlug?: string; nextChapterSlug?: string; nextBookSlug?: string } = {}
 
-  if (question.phase !== 'boss') {
+  if (question.phase !== 'boss' && question.phase !== 'micro') {
     if (!topicProgress) {
       topicProgress = await prisma.topicProgress.create({
         data: {

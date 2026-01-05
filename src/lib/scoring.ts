@@ -1,5 +1,6 @@
 export type Difficulty = 'basic' | 'medium' | 'advanced'
 export type HelpUsed = 'none' | 'tip' | 'doc'
+export type QuestionPhase = 'micro' | 'quiz' | 'boss'
 
 const baseScoreByDifficulty: Record<Difficulty, number> = {
   basic: 100,
@@ -17,4 +18,26 @@ export function scoreAnswer(difficulty: Difficulty, helpUsed: HelpUsed) {
   const base = baseScoreByDifficulty[difficulty] ?? 100
   const multiplier = helpMultiplier[helpUsed] ?? 1
   return Math.round(base * multiplier)
+}
+
+const microScore: Record<HelpUsed, number> = {
+  none: 10,
+  tip: 7,
+  doc: 4,
+}
+
+const quizScore: Record<HelpUsed, number> = {
+  none: 25,
+  tip: 15,
+  doc: 8,
+}
+
+export function computeScoreAwarded(params: {
+  phase: QuestionPhase
+  correct: boolean
+  helpUsed: HelpUsed
+}) {
+  if (!params.correct) return 0
+  const table = params.phase === 'micro' ? microScore : quizScore
+  return table[params.helpUsed] ?? 0
 }

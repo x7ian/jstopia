@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/db'
 import { loadMdx } from '@/lib/docs/loadMdx'
-import { DocScrollbook } from '@/components/DocScrollbook'
 import { TopicExperience } from '@/components/TopicExperience'
+import { DocScrollbook } from '@/components/DocScrollbook'
 
 export default async function TopicPage(props: { params: Promise<{ topicSlug: string }> }) {
   const params = await props.params
@@ -62,26 +62,48 @@ export default async function TopicPage(props: { params: Promise<{ topicSlug: st
             }
           : null
       }
-      docBlocks={topic.docPage?.blocks.map((block) => ({
-        anchor: block.anchor,
-        title: block.title,
-      })) ?? []}
+      docContent={
+        topic.docPage ? <DocScrollbook source={docSource} microQuestions={[]} /> : null
+      }
+      docContentWithMicro={
+        topic.docPage ? (
+          <DocScrollbook
+            source={docSource}
+            microQuestions={microQuestions.map((question) => ({
+              id: question.id,
+              prompt: question.prompt,
+              type: question.type,
+              choicesJson: question.choicesJson as any,
+              answer: question.answer,
+              answerDocBlockAnchor: question.answerDocBlock?.anchor ?? null,
+            }))}
+          />
+        ) : null
+      }
+      docBlocks={
+        topic.docPage?.blocks.map((block) => ({
+          id: block.id,
+          anchor: block.anchor,
+          title: block.title,
+          kind: block.kind,
+          excerpt: block.excerpt,
+          taskQuestionId: block.taskQuestionId ?? null,
+        })) ?? []
+      }
+      microQuestions={microQuestions.map((question) => ({
+        id: question.id,
+        prompt: question.prompt,
+        type: question.type,
+        choicesJson: question.choicesJson as any,
+        answer: question.answer,
+        tip1: question.tip1,
+        tip2: question.tip2,
+        filesJson: question.filesJson as any,
+        expectedJson: question.expectedJson as any,
+        answerDocBlockAnchor: question.answerDocBlock?.anchor ?? null,
+      }))}
       nav={{ nextTopicSlug: nextTopic?.slug ?? null }}
       quizCount={quizCount}
-    >
-      {topic.docPage ? (
-        <DocScrollbook
-          source={docSource}
-          microQuestions={microQuestions.map((question) => ({
-            id: question.id,
-            prompt: question.prompt,
-            type: question.type,
-            choicesJson: question.choicesJson as any,
-            answer: question.answer,
-            answerDocBlockAnchor: question.answerDocBlock?.anchor ?? null,
-          }))}
-        />
-      ) : null}
-    </TopicExperience>
+    />
   )
 }

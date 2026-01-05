@@ -1,44 +1,65 @@
----
-title: "Where JavaScript Lives"
-pageSlug: "javascriptopia-vanillaland-foundations/prologue-browser-wars/prologue-where-js-lives"
-estimatedMinutes: 6
-objectives:
-  - "Understand that JS runs in different environments"
-  - "Know the difference between browser and server"
-  - "Understand what a browser is at a high level"
----
-
 # Where JavaScript Lives
 
-JavaScript runs in more than one place.
-Each environment gives JS different powers and limits.
+JavaScript runs in more than one place. Each environment gives JS different powers and limits.
 
 <DocBlock anchor="what-is-a-browser" kind="explanation" title="What is a browser?">
-A browser is an application that loads web pages, runs JavaScript, and updates the screen.
-It provides **web APIs** like the DOM, events, and fetch.
+A browser is an application that:
+- loads HTML and CSS,
+- runs JavaScript,
+- updates the screen,
+- and provides **Web APIs** (DOM, events, fetch, storage, timers, etc).
+
+Think of it as a ship with:
+- a **JavaScript engine** (runs your code),
+- and a toolbox of **browser APIs** (what your code can control).
 </DocBlock>
 
 <DocBlock anchor="js-in-the-browser" kind="example" title="JS in the browser">
-Browser JavaScript usually starts in a script tag or module.
-It can respond to user actions and update the page.
+Browser JavaScript is built for interaction:
+- user clicks
+- keyboard input
+- page updates
+- network requests
+- UI animations
+
+In the browser, JavaScript’s main mission is:
+**react to events and update the page.**
 </DocBlock>
 
 <DocBlock anchor="js-on-the-server" kind="example" title="JS on the server">
-Server-side JavaScript usually runs in Node.
-It can read files, talk to databases, and build APIs.
+JavaScript can also run on servers (most commonly with Node.js and related runtimes).
+On servers, JavaScript can:
+- read files,
+- talk to databases,
+- build APIs,
+- run background tasks.
+
+Same language. Different environment. Different toolbox.
 </DocBlock>
 
-<DocBlock anchor="environments-summary" kind="rule" title="Different environments">
-JavaScript runs in the **browser** and on the **server**.
-The language is the same, but the available APIs are different.
+<DocBlock anchor="environments-summary" kind="rule" title="Different environments, different powers">
+One of the most important beginner skills is learning to separate:
+
+- **JavaScript the language** (variables, functions, objects, async patterns)
+from
+- **Environment APIs** (DOM in browsers, filesystem on servers, etc)
+
+This prevents confusion like:
+“Why doesn’t `document` exist in Node?”  
+Because `document` is a browser API, not the JavaScript language.
+
+<Callout kind="tip" title="Skill check">
+When something is missing, ask: “Is this a language feature or an environment API?”
+</Callout>
 </DocBlock>
 
 <DocBlock anchor="campfire-checklist" kind="rule" title="Campfire Checklist">
 <Checklist
 items={[
-  "I can explain what a browser does",
-  "I know JS runs in the browser and on the server",
-  "I understand that APIs differ by environment",
+"I know JS runs in multiple environments.",
+"I know the browser provides Web APIs (DOM/events/fetch).",
+"I understand “language feature vs environment API” at a high level.",
+"I’m ready for the Prologue Trial.",
 ]}
 />
 </DocBlock>

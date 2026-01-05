@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { HelpButton } from '@/components/quiz/HelpButton'
 import { Playground, type PlaygroundHandle } from '@/components/playground/Playground'
 import { scrollToAnchor } from '@/lib/docs/scrollToAnchor'
+import { applyAnswerResult, loadStreakState } from '@/lib/game/streak'
 import { cn } from '@/lib/utils'
 
 type QuizQuestion = {
@@ -17,7 +18,7 @@ type QuizQuestion = {
   tip1?: string | null
   tip2?: string | null
   files?: { name: string; language: 'html' | 'css' | 'js'; content: string }[] | null
-  expected?: { mode: 'consoleIncludes' | 'domTextEquals'; value: string } | null
+  expected?: { mode: 'consoleIncludes' | 'domTextEquals' | 'noConsoleErrors'; value?: string } | null
   doc?: {
     pageSlug: string
     answerBlock: { id: number; anchor: string; title?: string | null; kind?: string | null } | null
@@ -26,6 +27,7 @@ type QuizQuestion = {
 
 type QuizSectionProps = {
   topicSlug: string
+  topicTitle?: string
   sessionToken: string | null
   mode: 'learn' | 'challenge'
   quizCount: number
@@ -42,6 +44,7 @@ type QuizSectionProps = {
     correctCount: number
     wrongCount: number
     streak: number
+    quizStreak?: number
     quizIndex: number
     quizTotal: number
     totalScore: number
@@ -56,10 +59,13 @@ type QuizSectionProps = {
     docUsed: number
     masteryHalfSteps: number
   }) => void
+  headStartPips?: number
+  onTeleportAnchor?: (anchor: string) => void
 }
 
 export function QuizSection({
   topicSlug,
+  topicTitle,
   sessionToken,
   mode,
   quizCount,
@@ -69,6 +75,8 @@ export function QuizSection({
   onProgress,
   onHudUpdate,
   onComplete,
+  headStartPips = 0,
+  onTeleportAnchor,
 }: QuizSectionProps) {
   const [question, setQuestion] = useState<QuizQuestion | null>(null)
   const [selected, setSelected] = useState('')
@@ -77,7 +85,7 @@ export function QuizSection({
   const [answeredCount, setAnsweredCount] = useState(0)
   const [correctCount, setCorrectCount] = useState(0)
   const [wrongCount, setWrongCount] = useState(0)
-  const [streak, setStreak] = useState(0)
+  const [quizStreak, setQuizStreak] = useState(0)
   const [masteryHalfSteps, setMasteryHalfSteps] = useState(0)
   const [tipUsedCount, setTipUsedCount] = useState(0)
   const [docUsedCount, setDocUsedCount] = useState(0)
@@ -91,6 +99,7 @@ export function QuizSection({
   const [xpVisible, setXpVisible] = useState(false)
   const [completed, setCompleted] = useState(false)
   const playgroundRef = useRef<PlaygroundHandle | null>(null)
+  const headStartHalfSteps = Math.min(10, Math.max(0, headStartPips) * 2)
 
   const tip = useMemo(() => {
     if (helpLevel === 'tip') return question?.tip1 ?? null
@@ -105,7 +114,7 @@ export function QuizSection({
       ? 'Tip'
       : helpLevel === 'tip'
         ? hasAnchor && allowDoc
-          ? 'View Docs'
+          ? 'Teleport to answer'
           : 'Hide Tip'
         : 'Hide Tip'
 
@@ -122,7 +131,8 @@ export function QuizSection({
       masteryHalfSteps,
       correctCount,
       wrongCount,
-      streak,
+      streak: quizStreak,
+      quizStreak,
       quizIndex: quizCount > 0 ? quizIndex : 0,
       quizTotal: quizCount,
       totalScore,
@@ -136,29 +146,36 @@ export function QuizSection({
     masteryHalfSteps,
     correctCount,
     wrongCount,
-    streak,
+    quizStreak,
     totalScore,
     topicScore,
     lastDelta,
     onHudUpdate,
   ])
 
+  useEffect(() => {
+    if (answeredCount > 0) return
+    setMasteryHalfSteps(headStartHalfSteps)
+  }, [headStartHalfSteps, answeredCount])
+
   function resetRunState() {
+    const streakState = loadStreakState(sessionToken, 'quiz')
     setAnsweredCount(0)
     setCorrectCount(0)
     setWrongCount(0)
-    setStreak(0)
-    setMasteryHalfSteps(0)
+    setQuizStreak(streakState.streak)
+    setMasteryHalfSteps(headStartHalfSteps)
     setCompleted(false)
     setLastDelta(undefined)
     setTipUsedCount(0)
     setDocUsedCount(0)
     setHelpMessage(null)
     onHudUpdate?.({
-      masteryHalfSteps: 0,
+      masteryHalfSteps: headStartHalfSteps,
       correctCount: 0,
       wrongCount: 0,
-      streak: 0,
+      streak: streakState.streak,
+      quizStreak: streakState.streak,
       quizIndex: 0,
       quizTotal: quizCount,
       totalScore,
@@ -223,21 +240,20 @@ export function QuizSection({
       window.setTimeout(() => setXpVisible(false), 900)
     }
 
+    const streakUpdate = applyAnswerResult({ sessionToken, scope: 'quiz', correct })
     const nextAnswered = answeredCount + 1
     const nextCorrect = correct ? correctCount + 1 : correctCount
     const nextWrong = correct ? wrongCount : wrongCount + 1
-    const nextStreak = correct ? streak + 1 : 0
-    const nextMastery = Math.max(
-      0,
-      Math.min(10, masteryHalfSteps + (correct ? 2 : -1))
-    )
+    const nextStreak = streakUpdate.state.streak
+    const masteryDelta = correct ? (nextStreak % 3 === 0 ? 2 : 0) : -1
+    const nextMastery = Math.max(0, Math.min(10, masteryHalfSteps + masteryDelta))
     const nextTipUsed = helpUsed === 'tip' ? tipUsedCount + 1 : tipUsedCount
     const nextDocUsed = helpUsed === 'doc' ? docUsedCount + 1 : docUsedCount
 
     setAnsweredCount(nextAnswered)
     setCorrectCount(nextCorrect)
     setWrongCount(nextWrong)
-    setStreak(nextStreak)
+    setQuizStreak(nextStreak)
     setMasteryHalfSteps(nextMastery)
     setTipUsedCount(nextTipUsed)
     setDocUsedCount(nextDocUsed)
@@ -247,6 +263,7 @@ export function QuizSection({
       correctCount: nextCorrect,
       wrongCount: nextWrong,
       streak: nextStreak,
+      quizStreak: nextStreak,
       quizIndex: Math.min(quizCount, nextAnswered + 1),
       quizTotal: quizCount,
       totalScore: updatedTotal,
@@ -277,13 +294,15 @@ export function QuizSection({
     const runResult = await playgroundRef.current.run()
     const logText = runResult.logs.map((entry) => entry.message).join('\n')
     const hasErrors = runResult.errors.length > 0
-    const expectedValue = question.expected.value.trim()
+    const expectedValue = (question.expected.value ?? '').trim()
 
     const passed =
-      !hasErrors &&
-      (question.expected.mode === 'consoleIncludes'
-        ? logText.includes(expectedValue)
-        : runResult.resultText.trim() === expectedValue)
+      question.expected.mode === 'noConsoleErrors'
+        ? !hasErrors
+        : !hasErrors &&
+          (question.expected.mode === 'consoleIncludes'
+            ? logText.includes(expectedValue)
+            : runResult.resultText.trim() === expectedValue)
 
     await handleAnswer(passed ? question.answer : '__incorrect__')
   }
@@ -311,7 +330,11 @@ export function QuizSection({
           setHelpMessage('Trial rules: no more docs.')
           return
         }
-        scrollToAnchor(anchor)
+        if (onTeleportAnchor) {
+          onTeleportAnchor(anchor)
+        } else {
+          scrollToAnchor(anchor)
+        }
         setHelpLevel('doc')
         setHelpMessage(null)
       }
@@ -328,7 +351,11 @@ export function QuizSection({
           setHelpMessage('Trial rules: no more docs.')
           return
         }
-        scrollToAnchor(anchor)
+        if (onTeleportAnchor) {
+          onTeleportAnchor(anchor)
+        } else {
+          scrollToAnchor(anchor)
+        }
         setHelpLevel('doc')
         setHelpMessage(null)
       } else {
@@ -347,13 +374,14 @@ export function QuizSection({
       <div className="rounded-3xl border border-sky-200/70 bg-white/90 p-8 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Quiz</p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-900">Test your understanding</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              {mode === 'challenge'
-                ? 'Challenge mode starts here. Wrong answers can teleport you to the explanation.'
-                : 'Read through the scrollbook, then clear the quiz.'}
+            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+              Quiz: {topicTitle ?? topicSlug}
             </p>
+            {headStartPips > 0 ? (
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">
+                Head start: +{headStartPips} pip{headStartPips > 1 ? 's' : ''} from mastered topics
+              </p>
+            ) : null}
           </div>
           <div className="flex items-center gap-3">
             <HelpButton onClick={handleHelpToggle} active={helpLevel !== 'none'} label={helpLabel} />
@@ -463,11 +491,13 @@ export function QuizSection({
               >
                 <p className="font-semibold">{result === 'correct' ? 'Correct!' : 'Not quite yet.'}</p>
                 {explanation ? <p className="mt-2 text-slate-700">{explanation}</p> : null}
-                <div className="mt-4 flex flex-wrap items-center gap-3">
+                <div className="mt-4 flex flex-wrap items-center gap-3 justify-start">
                   {result === 'incorrect' && teleportAnchor ? (
                     <button
                       type="button"
-                      onClick={() => scrollToAnchor(teleportAnchor)}
+                      onClick={() =>
+                        onTeleportAnchor ? onTeleportAnchor(teleportAnchor) : scrollToAnchor(teleportAnchor)
+                      }
                       className="rounded-full border border-amber-300 bg-amber-200/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-amber-900"
                     >
                       Teleport to explanation

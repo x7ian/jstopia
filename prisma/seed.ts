@@ -23,9 +23,9 @@ async function upsertTopicWithDocs(params: {
     docPageSlug?: string
     prompt: string
     code?: string
-    choices?: { id: string; text: string }[]
+    choices?: ReadonlyArray<{ id: string; text: string }>
     files?: { name: string; language: 'html' | 'css' | 'js'; content: string }[]
-    expected?: { mode: 'consoleIncludes' | 'domTextEquals'; value: string }
+    expected?: { mode: 'consoleIncludes' | 'domTextEquals' | 'noConsoleErrors'; value?: string }
     answer: string
     tip1: string
     tip2?: string
@@ -117,7 +117,7 @@ async function upsertTopicWithDocs(params: {
       throw new Error(`Missing DocBlock anchor: ${question.answerDocBlockAnchor}`)
     }
 
-    await prisma.question.upsert({
+    const savedQuestion = await prisma.question.upsert({
       where: { slug: question.slug },
       update: {
         topicId: topic.id,
@@ -127,9 +127,9 @@ async function upsertTopicWithDocs(params: {
         rankSlug: question.rankSlug ?? null,
         prompt: question.prompt,
         code: question.code ?? null,
-        choicesJson: question.choices ?? null,
-        filesJson: question.files ?? null,
-        expectedJson: question.expected ?? null,
+        choicesJson: question.choices ?? undefined,
+        filesJson: question.files ?? undefined,
+        expectedJson: question.expected ?? undefined,
         answer: question.answer,
         tip1: question.tip1,
         tip2: question.tip2 ?? null,
@@ -147,9 +147,9 @@ async function upsertTopicWithDocs(params: {
         rankSlug: question.rankSlug ?? null,
         prompt: question.prompt,
         code: question.code ?? null,
-        choicesJson: question.choices ?? null,
-        filesJson: question.files ?? null,
-        expectedJson: question.expected ?? null,
+        choicesJson: question.choices ?? undefined,
+        filesJson: question.files ?? undefined,
+        expectedJson: question.expected ?? undefined,
         answer: question.answer,
         tip1: question.tip1,
         tip2: question.tip2 ?? null,
@@ -159,6 +159,13 @@ async function upsertTopicWithDocs(params: {
         answerDocBlockId,
       },
     })
+
+    if ((question.phase ?? 'quiz') === 'micro') {
+      await prisma.docBlock.updateMany({
+        where: { id: answerDocBlockId, taskQuestionId: null },
+        data: { taskQuestionId: savedQuestion.id },
+      })
+    }
   }
 
   await prisma.topic.update({
@@ -504,7 +511,7 @@ async function main() {
         rankSlug: question.rankSlug ?? null,
         prompt: question.prompt,
         code: question.code ?? null,
-        choicesJson: question.choices ?? null,
+        choicesJson: question.choices ?? undefined,
         answer: question.answer,
         tip1: question.tip1,
         tip2: question.tip2 ?? null,
@@ -522,7 +529,7 @@ async function main() {
         rankSlug: question.rankSlug ?? null,
         prompt: question.prompt,
         code: question.code ?? null,
-        choicesJson: question.choices ?? null,
+        choicesJson: question.choices ?? undefined,
         answer: question.answer,
         tip1: question.tip1,
         tip2: question.tip2 ?? null,
@@ -703,7 +710,7 @@ async function main() {
         rankSlug: question.rankSlug ?? null,
         prompt: question.prompt,
         code: question.code ?? null,
-        choicesJson: question.choices ?? null,
+        choicesJson: question.choices ?? undefined,
         answer: question.answer,
         tip1: question.tip1,
         tip2: question.tip2 ?? null,
@@ -721,7 +728,7 @@ async function main() {
         rankSlug: question.rankSlug ?? null,
         prompt: question.prompt,
         code: question.code ?? null,
-        choicesJson: question.choices ?? null,
+        choicesJson: question.choices ?? undefined,
         answer: question.answer,
         tip1: question.tip1,
         tip2: question.tip2 ?? null,

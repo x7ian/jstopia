@@ -5,7 +5,11 @@ type TopicHUDProps = {
   masteryHalfSteps: number
   correctCount: number
   wrongCount: number
-  streak: number
+  streak?: number
+  microStreak?: number
+  quizStreak?: number
+  shieldCount?: number
+  hintTokens?: number
   quizIndex: number
   quizTotal: number
   totalScore: number
@@ -21,7 +25,11 @@ export function TopicHUD({
   masteryHalfSteps,
   correctCount,
   wrongCount,
-  streak,
+  streak = 0,
+  microStreak,
+  quizStreak,
+  shieldCount = 0,
+  hintTokens = 0,
   quizIndex,
   quizTotal,
   totalScore,
@@ -56,8 +64,29 @@ export function TopicHUD({
         <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Wrong</span>
         <span className="ml-2 font-semibold text-rose-400">{wrongCount}</span>
         <span className="mx-3 text-[color:var(--muted)]">|</span>
-        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Streak</span>
-        <span className="ml-2 font-semibold text-amber-400">{streak}</span>
+        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Micro Streak</span>
+        <span className="ml-2 font-semibold text-amber-300">
+          {microStreak ?? streak}
+        </span>
+        <span className="mx-3 text-[color:var(--muted)]">|</span>
+        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Quiz Streak</span>
+        <span className="ml-2 font-semibold text-sky-300">
+          {quizStreak ?? streak}
+        </span>
+        {shieldCount > 0 ? (
+          <>
+            <span className="mx-3 text-[color:var(--muted)]">|</span>
+            <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Shield</span>
+            <span className="ml-2 font-semibold text-sky-300">{shieldCount}</span>
+          </>
+        ) : null}
+        {hintTokens > 0 ? (
+          <>
+            <span className="mx-3 text-[color:var(--muted)]">|</span>
+            <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Hints</span>
+            <span className="ml-2 font-semibold text-amber-200">{hintTokens}</span>
+          </>
+        ) : null}
         <span className="mx-3 text-[color:var(--muted)]">|</span>
         <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Quiz</span>
         <span className="ml-2 font-semibold text-[color:var(--text)]">
@@ -68,13 +97,6 @@ export function TopicHUD({
         <span className="ml-2 font-semibold text-[color:var(--text)]">
           Total {totalScore} · Lesson {topicScore}
         </span>
-        <span className="mx-3 text-[color:var(--muted)]">|</span>
-        <div className="flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--panel)] px-2 py-0.5">
-          <RankGemBadge rankSlug={rankSlug ?? 'unranked'} size="sm" />
-          <span className="uppercase tracking-[0.3em] text-[color:var(--text)]">
-            Rank: {rankTitle ?? 'Unranked'}
-          </span>
-        </div>
         {lastDelta ? (
           <>
             <span className="mx-3 text-[color:var(--muted)]">|</span>

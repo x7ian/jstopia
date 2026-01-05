@@ -117,9 +117,11 @@ model DocBlock {
   order     Int     @default(0)
   excerpt   String? @db.Text
   contentMd String? @db.LongText
+  taskQuestionId Int? @unique
 
   docPage DocPage @relation(fields: [docPageId], references: [id])
   answerFor Question[] @relation("AnswerDocBlock")
+  taskQuestion Question? @relation("DocBlockTask", fields: [taskQuestionId], references: [id])
 
   @@unique([docPageId, anchor])
 }
@@ -148,6 +150,7 @@ model Question {
   topic        Topic    @relation(fields: [topicId], references: [id])
   docPage      DocPage? @relation(fields: [docPageId], references: [id])
   answerDocBlock DocBlock? @relation("AnswerDocBlock", fields: [answerDocBlockId], references: [id])
+  taskDocBlock DocBlock? @relation("DocBlockTask")
   attempts     Attempt[]
 }
 

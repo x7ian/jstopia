@@ -13,11 +13,18 @@ type StickyTopicControlsProps = {
   sections?: { anchor: string; title?: string | null }[]
   showMenu?: boolean
   onToggleMenu?: () => void
+  onSelectSection?: (anchor: string) => void
+  activeAnchorOverride?: string | null
+  completedAnchors?: Set<string>
   hud?: {
     masteryHalfSteps: number
     correctCount: number
     wrongCount: number
-    streak: number
+    streak?: number
+    microStreak?: number
+    quizStreak?: number
+    shieldCount?: number
+    hintTokens?: number
     quizIndex: number
     quizTotal: number
     totalScore: number
@@ -33,17 +40,21 @@ export function StickyTopicControls({
   sections = [],
   showMenu = true,
   onToggleMenu,
+  onSelectSection,
+  activeAnchorOverride,
+  completedAnchors,
   hud,
   showProgress = true,
 }: StickyTopicControlsProps) {
   const [activeAnchor, setActiveAnchor] = useState<string | null>(null)
-  const anchorList = useMemo(
-    () => [...sections.map((section) => section.anchor), 'quiz'],
-    [sections]
-  )
+  const anchorList = useMemo(() => sections.map((section) => section.anchor), [sections])
 
   useEffect(() => {
     if (anchorList.length === 0) return
+    if (activeAnchorOverride) {
+      setActiveAnchor(activeAnchorOverride)
+      return
+    }
     const offset = 160
 
     const handleScroll = () => {
@@ -65,7 +76,7 @@ export function StickyTopicControls({
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleScroll)
     }
-  }, [anchorList])
+  }, [anchorList, activeAnchorOverride])
 
   function handleMode(next: 'learn' | 'challenge') {
     onModeChange?.(next)
@@ -85,14 +96,6 @@ export function StickyTopicControls({
           )}
         </div>
       ) : null}
-
-      <button
-        type="button"
-        onClick={() => scrollToId('quiz')}
-        className="w-full rounded-full btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em]"
-      >
-        Jump to Quiz
-      </button>
 
       <div className="flex w-full overflow-hidden rounded-full border border-[color:var(--border)] bg-[color:var(--panel)] text-xs font-semibold uppercase tracking-[0.3em]">
         <button
@@ -135,30 +138,24 @@ export function StickyTopicControls({
                 <button
                   key={block.anchor}
                   type="button"
-                  onClick={() => scrollToAnchor(block.anchor)}
+                  onClick={() => (onSelectSection ? onSelectSection(block.anchor) : scrollToAnchor(block.anchor))}
                   className={cn(
-                    'block w-full whitespace-normal break-words rounded-xl border border-transparent px-3 py-2 text-left text-sm text-[color:var(--text)] transition hover:border-[color:var(--accent)]/50 hover:bg-[color:var(--panel-strong)]',
+                    'flex w-full items-center justify-between gap-3 whitespace-normal break-words rounded-xl border border-transparent px-3 py-2 text-left text-sm text-[color:var(--text)] transition hover:border-[color:var(--accent)]/50 hover:bg-[color:var(--panel-strong)]',
                     activeAnchor === block.anchor &&
                       'border-[color:var(--accent)]/60 bg-[color:var(--panel-strong)] text-[color:var(--text)] shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent)_35%,transparent)]'
                   )}
                 >
-                  {block.title ?? block.anchor}
+                  <span>{block.title ?? block.anchor}</span>
+                  {completedAnchors?.has(block.anchor) ? (
+                    <span className="rounded-full bg-emerald-400/20 px-2 py-0.5 text-[0.55rem] font-semibold uppercase tracking-[0.3em] text-emerald-200">
+                      ✓
+                    </span>
+                  ) : null}
                 </button>
               ))
             ) : (
               <p className="text-xs text-[color:var(--muted)]">No sections yet.</p>
             )}
-            <button
-              type="button"
-              onClick={() => scrollToId('quiz')}
-              className={cn(
-                'block w-full rounded-xl btn-primary px-3 py-2 text-left text-sm font-semibold',
-                activeAnchor === 'quiz' &&
-                  'shadow-[0_0_0_2px_color-mix(in_srgb,var(--accent)_45%,transparent)]'
-              )}
-            >
-              Jump to Quiz
-            </button>
           </div>
         ) : null}
       </div>

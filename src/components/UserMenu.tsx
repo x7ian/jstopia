@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getStoredSessionToken, setStoredSessionToken } from '@/lib/session'
 import { RankGemBadge } from '@/components/ranks/RankGemBadge'
 
@@ -21,6 +21,7 @@ export function UserMenu() {
   const [open, setOpen] = useState(false)
   const [rankState, setRankState] = useState<RankState | null>(null)
   const [displayName, setDisplayName] = useState('Traveler')
+  const menuRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -54,8 +55,22 @@ export function UserMenu() {
     }
   }, [])
 
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      const target = event.target as Node | null
+      if (!open || !menuRef.current || !target) return
+      if (menuRef.current.contains(target)) return
+      setOpen(false)
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [open])
+
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}

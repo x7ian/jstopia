@@ -24,6 +24,7 @@ type PlaygroundProps = {
   showConsole?: boolean
   showPreview?: boolean
   onRunComplete?: (result: PlaygroundRunResult) => void
+  onFilesChange?: (files: PlaygroundFile[]) => void
 }
 
 export type PlaygroundHandle = {
@@ -46,10 +47,18 @@ export const Playground = forwardRef<PlaygroundHandle, PlaygroundProps>(function
     showConsole = true,
     showPreview,
     onRunComplete,
+    onFilesChange,
   },
   ref
 ) {
-  const initialFiles = useMemo(() => files.map((file) => ({ ...file })), [files])
+  const initialFiles = useMemo(
+    () =>
+      files.map((file) => ({
+        ...file,
+        content: normalizeFileContent(file.content),
+      })),
+    [files]
+  )
   const initialFilesRef = useRef<PlaygroundFile[] | null>(null)
   const runIdRef = useRef(0)
   const pendingRunRef = useRef<((result: PlaygroundRunResult) => void) | null>(null)
@@ -128,15 +137,26 @@ export const Playground = forwardRef<PlaygroundHandle, PlaygroundProps>(function
 
   const activeFileContent = currentFiles.find((file) => file.name === activeFile)?.content ?? ''
 
+  function normalizeFileContent(content: string) {
+    if (!content.includes('\\n') && !content.includes('\\t')) return content
+    const hasRealNewlines = content.includes('\n')
+    if (hasRealNewlines) return content
+    return content.replace(/\\n/g, '\n').replace(/\\t/g, '\t')
+  }
+
   function updateFile(name: string, value: string) {
-    setCurrentFiles((prev) =>
-      prev.map((file) => (file.name === name ? { ...file, content: value } : file))
-    )
+    setCurrentFiles((prev) => {
+      const next = prev.map((file) => (file.name === name ? { ...file, content: value } : file))
+      onFilesChange?.(next)
+      return next
+    })
   }
 
   function reset() {
     if (!initialFilesRef.current) return
-    setCurrentFiles(initialFilesRef.current.map((file) => ({ ...file })))
+    const next = initialFilesRef.current.map((file) => ({ ...file }))
+    setCurrentFiles(next)
+    onFilesChange?.(next)
     logsRef.current = []
     errorsRef.current = []
     resultTextRef.current = ''
