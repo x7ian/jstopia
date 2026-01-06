@@ -29,12 +29,14 @@ export type DocBlockAvgAggregateOutputType = {
   id: number | null
   docPageId: number | null
   order: number | null
+  taskQuestionId: number | null
 }
 
 export type DocBlockSumAggregateOutputType = {
   id: number | null
   docPageId: number | null
   order: number | null
+  taskQuestionId: number | null
 }
 
 export type DocBlockMinAggregateOutputType = {
@@ -46,6 +48,7 @@ export type DocBlockMinAggregateOutputType = {
   order: number | null
   excerpt: string | null
   contentMd: string | null
+  taskQuestionId: number | null
 }
 
 export type DocBlockMaxAggregateOutputType = {
@@ -57,6 +60,7 @@ export type DocBlockMaxAggregateOutputType = {
   order: number | null
   excerpt: string | null
   contentMd: string | null
+  taskQuestionId: number | null
 }
 
 export type DocBlockCountAggregateOutputType = {
@@ -68,6 +72,7 @@ export type DocBlockCountAggregateOutputType = {
   order: number
   excerpt: number
   contentMd: number
+  taskQuestionId: number
   _all: number
 }
 
@@ -76,12 +81,14 @@ export type DocBlockAvgAggregateInputType = {
   id?: true
   docPageId?: true
   order?: true
+  taskQuestionId?: true
 }
 
 export type DocBlockSumAggregateInputType = {
   id?: true
   docPageId?: true
   order?: true
+  taskQuestionId?: true
 }
 
 export type DocBlockMinAggregateInputType = {
@@ -93,6 +100,7 @@ export type DocBlockMinAggregateInputType = {
   order?: true
   excerpt?: true
   contentMd?: true
+  taskQuestionId?: true
 }
 
 export type DocBlockMaxAggregateInputType = {
@@ -104,6 +112,7 @@ export type DocBlockMaxAggregateInputType = {
   order?: true
   excerpt?: true
   contentMd?: true
+  taskQuestionId?: true
 }
 
 export type DocBlockCountAggregateInputType = {
@@ -115,6 +124,7 @@ export type DocBlockCountAggregateInputType = {
   order?: true
   excerpt?: true
   contentMd?: true
+  taskQuestionId?: true
   _all?: true
 }
 
@@ -213,6 +223,7 @@ export type DocBlockGroupByOutputType = {
   order: number
   excerpt: string | null
   contentMd: string | null
+  taskQuestionId: number | null
   _count: DocBlockCountAggregateOutputType | null
   _avg: DocBlockAvgAggregateOutputType | null
   _sum: DocBlockSumAggregateOutputType | null
@@ -247,8 +258,10 @@ export type DocBlockWhereInput = {
   order?: Prisma.IntFilter<"DocBlock"> | number
   excerpt?: Prisma.StringNullableFilter<"DocBlock"> | string | null
   contentMd?: Prisma.StringNullableFilter<"DocBlock"> | string | null
+  taskQuestionId?: Prisma.IntNullableFilter<"DocBlock"> | number | null
   docPage?: Prisma.XOR<Prisma.DocPageScalarRelationFilter, Prisma.DocPageWhereInput>
   answerFor?: Prisma.QuestionListRelationFilter
+  taskQuestion?: Prisma.XOR<Prisma.QuestionNullableScalarRelationFilter, Prisma.QuestionWhereInput> | null
 }
 
 export type DocBlockOrderByWithRelationInput = {
@@ -260,13 +273,16 @@ export type DocBlockOrderByWithRelationInput = {
   order?: Prisma.SortOrder
   excerpt?: Prisma.SortOrderInput | Prisma.SortOrder
   contentMd?: Prisma.SortOrderInput | Prisma.SortOrder
+  taskQuestionId?: Prisma.SortOrderInput | Prisma.SortOrder
   docPage?: Prisma.DocPageOrderByWithRelationInput
   answerFor?: Prisma.QuestionOrderByRelationAggregateInput
+  taskQuestion?: Prisma.QuestionOrderByWithRelationInput
   _relevance?: Prisma.DocBlockOrderByRelevanceInput
 }
 
 export type DocBlockWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  taskQuestionId?: number
   docPageId_anchor?: Prisma.DocBlockDocPageIdAnchorCompoundUniqueInput
   AND?: Prisma.DocBlockWhereInput | Prisma.DocBlockWhereInput[]
   OR?: Prisma.DocBlockWhereInput[]
@@ -280,7 +296,8 @@ export type DocBlockWhereUniqueInput = Prisma.AtLeast<{
   contentMd?: Prisma.StringNullableFilter<"DocBlock"> | string | null
   docPage?: Prisma.XOR<Prisma.DocPageScalarRelationFilter, Prisma.DocPageWhereInput>
   answerFor?: Prisma.QuestionListRelationFilter
-}, "id" | "docPageId_anchor">
+  taskQuestion?: Prisma.XOR<Prisma.QuestionNullableScalarRelationFilter, Prisma.QuestionWhereInput> | null
+}, "id" | "taskQuestionId" | "docPageId_anchor">
 
 export type DocBlockOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -291,6 +308,7 @@ export type DocBlockOrderByWithAggregationInput = {
   order?: Prisma.SortOrder
   excerpt?: Prisma.SortOrderInput | Prisma.SortOrder
   contentMd?: Prisma.SortOrderInput | Prisma.SortOrder
+  taskQuestionId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.DocBlockCountOrderByAggregateInput
   _avg?: Prisma.DocBlockAvgOrderByAggregateInput
   _max?: Prisma.DocBlockMaxOrderByAggregateInput
@@ -310,6 +328,7 @@ export type DocBlockScalarWhereWithAggregatesInput = {
   order?: Prisma.IntWithAggregatesFilter<"DocBlock"> | number
   excerpt?: Prisma.StringNullableWithAggregatesFilter<"DocBlock"> | string | null
   contentMd?: Prisma.StringNullableWithAggregatesFilter<"DocBlock"> | string | null
+  taskQuestionId?: Prisma.IntNullableWithAggregatesFilter<"DocBlock"> | number | null
 }
 
 export type DocBlockCreateInput = {
@@ -321,6 +340,7 @@ export type DocBlockCreateInput = {
   contentMd?: string | null
   docPage: Prisma.DocPageCreateNestedOneWithoutBlocksInput
   answerFor?: Prisma.QuestionCreateNestedManyWithoutAnswerDocBlockInput
+  taskQuestion?: Prisma.QuestionCreateNestedOneWithoutTaskDocBlockInput
 }
 
 export type DocBlockUncheckedCreateInput = {
@@ -332,6 +352,7 @@ export type DocBlockUncheckedCreateInput = {
   order?: number
   excerpt?: string | null
   contentMd?: string | null
+  taskQuestionId?: number | null
   answerFor?: Prisma.QuestionUncheckedCreateNestedManyWithoutAnswerDocBlockInput
 }
 
@@ -344,6 +365,7 @@ export type DocBlockUpdateInput = {
   contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docPage?: Prisma.DocPageUpdateOneRequiredWithoutBlocksNestedInput
   answerFor?: Prisma.QuestionUpdateManyWithoutAnswerDocBlockNestedInput
+  taskQuestion?: Prisma.QuestionUpdateOneWithoutTaskDocBlockNestedInput
 }
 
 export type DocBlockUncheckedUpdateInput = {
@@ -355,6 +377,7 @@ export type DocBlockUncheckedUpdateInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskQuestionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   answerFor?: Prisma.QuestionUncheckedUpdateManyWithoutAnswerDocBlockNestedInput
 }
 
@@ -367,6 +390,7 @@ export type DocBlockCreateManyInput = {
   order?: number
   excerpt?: string | null
   contentMd?: string | null
+  taskQuestionId?: number | null
 }
 
 export type DocBlockUpdateManyMutationInput = {
@@ -387,6 +411,7 @@ export type DocBlockUncheckedUpdateManyInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskQuestionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type DocBlockListRelationFilter = {
@@ -419,12 +444,14 @@ export type DocBlockCountOrderByAggregateInput = {
   order?: Prisma.SortOrder
   excerpt?: Prisma.SortOrder
   contentMd?: Prisma.SortOrder
+  taskQuestionId?: Prisma.SortOrder
 }
 
 export type DocBlockAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   docPageId?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  taskQuestionId?: Prisma.SortOrder
 }
 
 export type DocBlockMaxOrderByAggregateInput = {
@@ -436,6 +463,7 @@ export type DocBlockMaxOrderByAggregateInput = {
   order?: Prisma.SortOrder
   excerpt?: Prisma.SortOrder
   contentMd?: Prisma.SortOrder
+  taskQuestionId?: Prisma.SortOrder
 }
 
 export type DocBlockMinOrderByAggregateInput = {
@@ -447,12 +475,14 @@ export type DocBlockMinOrderByAggregateInput = {
   order?: Prisma.SortOrder
   excerpt?: Prisma.SortOrder
   contentMd?: Prisma.SortOrder
+  taskQuestionId?: Prisma.SortOrder
 }
 
 export type DocBlockSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   docPageId?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  taskQuestionId?: Prisma.SortOrder
 }
 
 export type DocBlockNullableScalarRelationFilter = {
@@ -508,6 +538,18 @@ export type DocBlockCreateNestedOneWithoutAnswerForInput = {
   connect?: Prisma.DocBlockWhereUniqueInput
 }
 
+export type DocBlockCreateNestedOneWithoutTaskQuestionInput = {
+  create?: Prisma.XOR<Prisma.DocBlockCreateWithoutTaskQuestionInput, Prisma.DocBlockUncheckedCreateWithoutTaskQuestionInput>
+  connectOrCreate?: Prisma.DocBlockCreateOrConnectWithoutTaskQuestionInput
+  connect?: Prisma.DocBlockWhereUniqueInput
+}
+
+export type DocBlockUncheckedCreateNestedOneWithoutTaskQuestionInput = {
+  create?: Prisma.XOR<Prisma.DocBlockCreateWithoutTaskQuestionInput, Prisma.DocBlockUncheckedCreateWithoutTaskQuestionInput>
+  connectOrCreate?: Prisma.DocBlockCreateOrConnectWithoutTaskQuestionInput
+  connect?: Prisma.DocBlockWhereUniqueInput
+}
+
 export type DocBlockUpdateOneWithoutAnswerForNestedInput = {
   create?: Prisma.XOR<Prisma.DocBlockCreateWithoutAnswerForInput, Prisma.DocBlockUncheckedCreateWithoutAnswerForInput>
   connectOrCreate?: Prisma.DocBlockCreateOrConnectWithoutAnswerForInput
@@ -518,6 +560,26 @@ export type DocBlockUpdateOneWithoutAnswerForNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocBlockUpdateToOneWithWhereWithoutAnswerForInput, Prisma.DocBlockUpdateWithoutAnswerForInput>, Prisma.DocBlockUncheckedUpdateWithoutAnswerForInput>
 }
 
+export type DocBlockUpdateOneWithoutTaskQuestionNestedInput = {
+  create?: Prisma.XOR<Prisma.DocBlockCreateWithoutTaskQuestionInput, Prisma.DocBlockUncheckedCreateWithoutTaskQuestionInput>
+  connectOrCreate?: Prisma.DocBlockCreateOrConnectWithoutTaskQuestionInput
+  upsert?: Prisma.DocBlockUpsertWithoutTaskQuestionInput
+  disconnect?: Prisma.DocBlockWhereInput | boolean
+  delete?: Prisma.DocBlockWhereInput | boolean
+  connect?: Prisma.DocBlockWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocBlockUpdateToOneWithWhereWithoutTaskQuestionInput, Prisma.DocBlockUpdateWithoutTaskQuestionInput>, Prisma.DocBlockUncheckedUpdateWithoutTaskQuestionInput>
+}
+
+export type DocBlockUncheckedUpdateOneWithoutTaskQuestionNestedInput = {
+  create?: Prisma.XOR<Prisma.DocBlockCreateWithoutTaskQuestionInput, Prisma.DocBlockUncheckedCreateWithoutTaskQuestionInput>
+  connectOrCreate?: Prisma.DocBlockCreateOrConnectWithoutTaskQuestionInput
+  upsert?: Prisma.DocBlockUpsertWithoutTaskQuestionInput
+  disconnect?: Prisma.DocBlockWhereInput | boolean
+  delete?: Prisma.DocBlockWhereInput | boolean
+  connect?: Prisma.DocBlockWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocBlockUpdateToOneWithWhereWithoutTaskQuestionInput, Prisma.DocBlockUpdateWithoutTaskQuestionInput>, Prisma.DocBlockUncheckedUpdateWithoutTaskQuestionInput>
+}
+
 export type DocBlockCreateWithoutDocPageInput = {
   anchor: string
   title?: string | null
@@ -526,6 +588,7 @@ export type DocBlockCreateWithoutDocPageInput = {
   excerpt?: string | null
   contentMd?: string | null
   answerFor?: Prisma.QuestionCreateNestedManyWithoutAnswerDocBlockInput
+  taskQuestion?: Prisma.QuestionCreateNestedOneWithoutTaskDocBlockInput
 }
 
 export type DocBlockUncheckedCreateWithoutDocPageInput = {
@@ -536,6 +599,7 @@ export type DocBlockUncheckedCreateWithoutDocPageInput = {
   order?: number
   excerpt?: string | null
   contentMd?: string | null
+  taskQuestionId?: number | null
   answerFor?: Prisma.QuestionUncheckedCreateNestedManyWithoutAnswerDocBlockInput
 }
 
@@ -577,6 +641,7 @@ export type DocBlockScalarWhereInput = {
   order?: Prisma.IntFilter<"DocBlock"> | number
   excerpt?: Prisma.StringNullableFilter<"DocBlock"> | string | null
   contentMd?: Prisma.StringNullableFilter<"DocBlock"> | string | null
+  taskQuestionId?: Prisma.IntNullableFilter<"DocBlock"> | number | null
 }
 
 export type DocBlockCreateWithoutAnswerForInput = {
@@ -587,6 +652,7 @@ export type DocBlockCreateWithoutAnswerForInput = {
   excerpt?: string | null
   contentMd?: string | null
   docPage: Prisma.DocPageCreateNestedOneWithoutBlocksInput
+  taskQuestion?: Prisma.QuestionCreateNestedOneWithoutTaskDocBlockInput
 }
 
 export type DocBlockUncheckedCreateWithoutAnswerForInput = {
@@ -598,11 +664,40 @@ export type DocBlockUncheckedCreateWithoutAnswerForInput = {
   order?: number
   excerpt?: string | null
   contentMd?: string | null
+  taskQuestionId?: number | null
 }
 
 export type DocBlockCreateOrConnectWithoutAnswerForInput = {
   where: Prisma.DocBlockWhereUniqueInput
   create: Prisma.XOR<Prisma.DocBlockCreateWithoutAnswerForInput, Prisma.DocBlockUncheckedCreateWithoutAnswerForInput>
+}
+
+export type DocBlockCreateWithoutTaskQuestionInput = {
+  anchor: string
+  title?: string | null
+  kind: string
+  order?: number
+  excerpt?: string | null
+  contentMd?: string | null
+  docPage: Prisma.DocPageCreateNestedOneWithoutBlocksInput
+  answerFor?: Prisma.QuestionCreateNestedManyWithoutAnswerDocBlockInput
+}
+
+export type DocBlockUncheckedCreateWithoutTaskQuestionInput = {
+  id?: number
+  docPageId: number
+  anchor: string
+  title?: string | null
+  kind: string
+  order?: number
+  excerpt?: string | null
+  contentMd?: string | null
+  answerFor?: Prisma.QuestionUncheckedCreateNestedManyWithoutAnswerDocBlockInput
+}
+
+export type DocBlockCreateOrConnectWithoutTaskQuestionInput = {
+  where: Prisma.DocBlockWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocBlockCreateWithoutTaskQuestionInput, Prisma.DocBlockUncheckedCreateWithoutTaskQuestionInput>
 }
 
 export type DocBlockUpsertWithoutAnswerForInput = {
@@ -624,6 +719,7 @@ export type DocBlockUpdateWithoutAnswerForInput = {
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docPage?: Prisma.DocPageUpdateOneRequiredWithoutBlocksNestedInput
+  taskQuestion?: Prisma.QuestionUpdateOneWithoutTaskDocBlockNestedInput
 }
 
 export type DocBlockUncheckedUpdateWithoutAnswerForInput = {
@@ -635,6 +731,41 @@ export type DocBlockUncheckedUpdateWithoutAnswerForInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskQuestionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type DocBlockUpsertWithoutTaskQuestionInput = {
+  update: Prisma.XOR<Prisma.DocBlockUpdateWithoutTaskQuestionInput, Prisma.DocBlockUncheckedUpdateWithoutTaskQuestionInput>
+  create: Prisma.XOR<Prisma.DocBlockCreateWithoutTaskQuestionInput, Prisma.DocBlockUncheckedCreateWithoutTaskQuestionInput>
+  where?: Prisma.DocBlockWhereInput
+}
+
+export type DocBlockUpdateToOneWithWhereWithoutTaskQuestionInput = {
+  where?: Prisma.DocBlockWhereInput
+  data: Prisma.XOR<Prisma.DocBlockUpdateWithoutTaskQuestionInput, Prisma.DocBlockUncheckedUpdateWithoutTaskQuestionInput>
+}
+
+export type DocBlockUpdateWithoutTaskQuestionInput = {
+  anchor?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  docPage?: Prisma.DocPageUpdateOneRequiredWithoutBlocksNestedInput
+  answerFor?: Prisma.QuestionUpdateManyWithoutAnswerDocBlockNestedInput
+}
+
+export type DocBlockUncheckedUpdateWithoutTaskQuestionInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  docPageId?: Prisma.IntFieldUpdateOperationsInput | number
+  anchor?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  answerFor?: Prisma.QuestionUncheckedUpdateManyWithoutAnswerDocBlockNestedInput
 }
 
 export type DocBlockCreateManyDocPageInput = {
@@ -645,6 +776,7 @@ export type DocBlockCreateManyDocPageInput = {
   order?: number
   excerpt?: string | null
   contentMd?: string | null
+  taskQuestionId?: number | null
 }
 
 export type DocBlockUpdateWithoutDocPageInput = {
@@ -655,6 +787,7 @@ export type DocBlockUpdateWithoutDocPageInput = {
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answerFor?: Prisma.QuestionUpdateManyWithoutAnswerDocBlockNestedInput
+  taskQuestion?: Prisma.QuestionUpdateOneWithoutTaskDocBlockNestedInput
 }
 
 export type DocBlockUncheckedUpdateWithoutDocPageInput = {
@@ -665,6 +798,7 @@ export type DocBlockUncheckedUpdateWithoutDocPageInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskQuestionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   answerFor?: Prisma.QuestionUncheckedUpdateManyWithoutAnswerDocBlockNestedInput
 }
 
@@ -676,6 +810,7 @@ export type DocBlockUncheckedUpdateManyWithoutDocPageInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contentMd?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taskQuestionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -718,8 +853,10 @@ export type DocBlockSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   order?: boolean
   excerpt?: boolean
   contentMd?: boolean
+  taskQuestionId?: boolean
   docPage?: boolean | Prisma.DocPageDefaultArgs<ExtArgs>
   answerFor?: boolean | Prisma.DocBlock$answerForArgs<ExtArgs>
+  taskQuestion?: boolean | Prisma.DocBlock$taskQuestionArgs<ExtArgs>
   _count?: boolean | Prisma.DocBlockCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["docBlock"]>
 
@@ -734,12 +871,14 @@ export type DocBlockSelectScalar = {
   order?: boolean
   excerpt?: boolean
   contentMd?: boolean
+  taskQuestionId?: boolean
 }
 
-export type DocBlockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "docPageId" | "anchor" | "title" | "kind" | "order" | "excerpt" | "contentMd", ExtArgs["result"]["docBlock"]>
+export type DocBlockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "docPageId" | "anchor" | "title" | "kind" | "order" | "excerpt" | "contentMd" | "taskQuestionId", ExtArgs["result"]["docBlock"]>
 export type DocBlockInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   docPage?: boolean | Prisma.DocPageDefaultArgs<ExtArgs>
   answerFor?: boolean | Prisma.DocBlock$answerForArgs<ExtArgs>
+  taskQuestion?: boolean | Prisma.DocBlock$taskQuestionArgs<ExtArgs>
   _count?: boolean | Prisma.DocBlockCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -748,6 +887,7 @@ export type $DocBlockPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     docPage: Prisma.$DocPagePayload<ExtArgs>
     answerFor: Prisma.$QuestionPayload<ExtArgs>[]
+    taskQuestion: Prisma.$QuestionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -758,6 +898,7 @@ export type $DocBlockPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     order: number
     excerpt: string | null
     contentMd: string | null
+    taskQuestionId: number | null
   }, ExtArgs["result"]["docBlock"]>
   composites: {}
 }
@@ -1100,6 +1241,7 @@ export interface Prisma__DocBlockClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   docPage<T extends Prisma.DocPageDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocPageDefaultArgs<ExtArgs>>): Prisma.Prisma__DocPageClient<runtime.Types.Result.GetResult<Prisma.$DocPagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   answerFor<T extends Prisma.DocBlock$answerForArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocBlock$answerForArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskQuestion<T extends Prisma.DocBlock$taskQuestionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocBlock$taskQuestionArgs<ExtArgs>>): Prisma.Prisma__QuestionClient<runtime.Types.Result.GetResult<Prisma.$QuestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1137,6 +1279,7 @@ export interface DocBlockFieldRefs {
   readonly order: Prisma.FieldRef<"DocBlock", 'Int'>
   readonly excerpt: Prisma.FieldRef<"DocBlock", 'String'>
   readonly contentMd: Prisma.FieldRef<"DocBlock", 'String'>
+  readonly taskQuestionId: Prisma.FieldRef<"DocBlock", 'Int'>
 }
     
 
@@ -1501,6 +1644,25 @@ export type DocBlock$answerForArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.QuestionScalarFieldEnum | Prisma.QuestionScalarFieldEnum[]
+}
+
+/**
+ * DocBlock.taskQuestion
+ */
+export type DocBlock$taskQuestionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Question
+   */
+  select?: Prisma.QuestionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Question
+   */
+  omit?: Prisma.QuestionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QuestionInclude<ExtArgs> | null
+  where?: Prisma.QuestionWhereInput
 }
 
 /**

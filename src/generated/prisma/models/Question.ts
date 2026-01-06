@@ -326,6 +326,7 @@ export type QuestionWhereInput = {
   topic?: Prisma.XOR<Prisma.TopicScalarRelationFilter, Prisma.TopicWhereInput>
   docPage?: Prisma.XOR<Prisma.DocPageNullableScalarRelationFilter, Prisma.DocPageWhereInput> | null
   answerDocBlock?: Prisma.XOR<Prisma.DocBlockNullableScalarRelationFilter, Prisma.DocBlockWhereInput> | null
+  taskDocBlock?: Prisma.XOR<Prisma.DocBlockNullableScalarRelationFilter, Prisma.DocBlockWhereInput> | null
   attempts?: Prisma.AttemptListRelationFilter
 }
 
@@ -352,6 +353,7 @@ export type QuestionOrderByWithRelationInput = {
   topic?: Prisma.TopicOrderByWithRelationInput
   docPage?: Prisma.DocPageOrderByWithRelationInput
   answerDocBlock?: Prisma.DocBlockOrderByWithRelationInput
+  taskDocBlock?: Prisma.DocBlockOrderByWithRelationInput
   attempts?: Prisma.AttemptOrderByRelationAggregateInput
   _relevance?: Prisma.QuestionOrderByRelevanceInput
 }
@@ -382,6 +384,7 @@ export type QuestionWhereUniqueInput = Prisma.AtLeast<{
   topic?: Prisma.XOR<Prisma.TopicScalarRelationFilter, Prisma.TopicWhereInput>
   docPage?: Prisma.XOR<Prisma.DocPageNullableScalarRelationFilter, Prisma.DocPageWhereInput> | null
   answerDocBlock?: Prisma.XOR<Prisma.DocBlockNullableScalarRelationFilter, Prisma.DocBlockWhereInput> | null
+  taskDocBlock?: Prisma.XOR<Prisma.DocBlockNullableScalarRelationFilter, Prisma.DocBlockWhereInput> | null
   attempts?: Prisma.AttemptListRelationFilter
 }, "id" | "slug">
 
@@ -456,6 +459,7 @@ export type QuestionCreateInput = {
   topic: Prisma.TopicCreateNestedOneWithoutQuestionsInput
   docPage?: Prisma.DocPageCreateNestedOneWithoutQuestionsInput
   answerDocBlock?: Prisma.DocBlockCreateNestedOneWithoutAnswerForInput
+  taskDocBlock?: Prisma.DocBlockCreateNestedOneWithoutTaskQuestionInput
   attempts?: Prisma.AttemptCreateNestedManyWithoutQuestionInput
 }
 
@@ -479,6 +483,7 @@ export type QuestionUncheckedCreateInput = {
   docPageId?: number | null
   answerDocBlockId?: number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedCreateNestedOneWithoutTaskQuestionInput
   attempts?: Prisma.AttemptUncheckedCreateNestedManyWithoutQuestionInput
 }
 
@@ -501,6 +506,7 @@ export type QuestionUpdateInput = {
   topic?: Prisma.TopicUpdateOneRequiredWithoutQuestionsNestedInput
   docPage?: Prisma.DocPageUpdateOneWithoutQuestionsNestedInput
   answerDocBlock?: Prisma.DocBlockUpdateOneWithoutAnswerForNestedInput
+  taskDocBlock?: Prisma.DocBlockUpdateOneWithoutTaskQuestionNestedInput
   attempts?: Prisma.AttemptUpdateManyWithoutQuestionNestedInput
 }
 
@@ -524,6 +530,7 @@ export type QuestionUncheckedUpdateInput = {
   docPageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   answerDocBlockId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedUpdateOneWithoutTaskQuestionNestedInput
   attempts?: Prisma.AttemptUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
@@ -597,6 +604,11 @@ export type QuestionListRelationFilter = {
 
 export type QuestionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type QuestionNullableScalarRelationFilter = {
+  is?: Prisma.QuestionWhereInput | null
+  isNot?: Prisma.QuestionWhereInput | null
 }
 
 export type QuestionOrderByRelevanceInput = {
@@ -773,6 +785,12 @@ export type QuestionCreateNestedManyWithoutAnswerDocBlockInput = {
   connect?: Prisma.QuestionWhereUniqueInput | Prisma.QuestionWhereUniqueInput[]
 }
 
+export type QuestionCreateNestedOneWithoutTaskDocBlockInput = {
+  create?: Prisma.XOR<Prisma.QuestionCreateWithoutTaskDocBlockInput, Prisma.QuestionUncheckedCreateWithoutTaskDocBlockInput>
+  connectOrCreate?: Prisma.QuestionCreateOrConnectWithoutTaskDocBlockInput
+  connect?: Prisma.QuestionWhereUniqueInput
+}
+
 export type QuestionUncheckedCreateNestedManyWithoutAnswerDocBlockInput = {
   create?: Prisma.XOR<Prisma.QuestionCreateWithoutAnswerDocBlockInput, Prisma.QuestionUncheckedCreateWithoutAnswerDocBlockInput> | Prisma.QuestionCreateWithoutAnswerDocBlockInput[] | Prisma.QuestionUncheckedCreateWithoutAnswerDocBlockInput[]
   connectOrCreate?: Prisma.QuestionCreateOrConnectWithoutAnswerDocBlockInput | Prisma.QuestionCreateOrConnectWithoutAnswerDocBlockInput[]
@@ -792,6 +810,16 @@ export type QuestionUpdateManyWithoutAnswerDocBlockNestedInput = {
   update?: Prisma.QuestionUpdateWithWhereUniqueWithoutAnswerDocBlockInput | Prisma.QuestionUpdateWithWhereUniqueWithoutAnswerDocBlockInput[]
   updateMany?: Prisma.QuestionUpdateManyWithWhereWithoutAnswerDocBlockInput | Prisma.QuestionUpdateManyWithWhereWithoutAnswerDocBlockInput[]
   deleteMany?: Prisma.QuestionScalarWhereInput | Prisma.QuestionScalarWhereInput[]
+}
+
+export type QuestionUpdateOneWithoutTaskDocBlockNestedInput = {
+  create?: Prisma.XOR<Prisma.QuestionCreateWithoutTaskDocBlockInput, Prisma.QuestionUncheckedCreateWithoutTaskDocBlockInput>
+  connectOrCreate?: Prisma.QuestionCreateOrConnectWithoutTaskDocBlockInput
+  upsert?: Prisma.QuestionUpsertWithoutTaskDocBlockInput
+  disconnect?: Prisma.QuestionWhereInput | boolean
+  delete?: Prisma.QuestionWhereInput | boolean
+  connect?: Prisma.QuestionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.QuestionUpdateToOneWithWhereWithoutTaskDocBlockInput, Prisma.QuestionUpdateWithoutTaskDocBlockInput>, Prisma.QuestionUncheckedUpdateWithoutTaskDocBlockInput>
 }
 
 export type QuestionUncheckedUpdateManyWithoutAnswerDocBlockNestedInput = {
@@ -852,6 +880,7 @@ export type QuestionCreateWithoutTopicInput = {
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   docPage?: Prisma.DocPageCreateNestedOneWithoutQuestionsInput
   answerDocBlock?: Prisma.DocBlockCreateNestedOneWithoutAnswerForInput
+  taskDocBlock?: Prisma.DocBlockCreateNestedOneWithoutTaskQuestionInput
   attempts?: Prisma.AttemptCreateNestedManyWithoutQuestionInput
 }
 
@@ -874,6 +903,7 @@ export type QuestionUncheckedCreateWithoutTopicInput = {
   docPageId?: number | null
   answerDocBlockId?: number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedCreateNestedOneWithoutTaskQuestionInput
   attempts?: Prisma.AttemptUncheckedCreateNestedManyWithoutQuestionInput
 }
 
@@ -946,6 +976,7 @@ export type QuestionCreateWithoutDocPageInput = {
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.TopicCreateNestedOneWithoutQuestionsInput
   answerDocBlock?: Prisma.DocBlockCreateNestedOneWithoutAnswerForInput
+  taskDocBlock?: Prisma.DocBlockCreateNestedOneWithoutTaskQuestionInput
   attempts?: Prisma.AttemptCreateNestedManyWithoutQuestionInput
 }
 
@@ -968,6 +999,7 @@ export type QuestionUncheckedCreateWithoutDocPageInput = {
   explanationShort: string
   answerDocBlockId?: number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedCreateNestedOneWithoutTaskQuestionInput
   attempts?: Prisma.AttemptUncheckedCreateNestedManyWithoutQuestionInput
 }
 
@@ -1015,6 +1047,7 @@ export type QuestionCreateWithoutAnswerDocBlockInput = {
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.TopicCreateNestedOneWithoutQuestionsInput
   docPage?: Prisma.DocPageCreateNestedOneWithoutQuestionsInput
+  taskDocBlock?: Prisma.DocBlockCreateNestedOneWithoutTaskQuestionInput
   attempts?: Prisma.AttemptCreateNestedManyWithoutQuestionInput
 }
 
@@ -1037,6 +1070,7 @@ export type QuestionUncheckedCreateWithoutAnswerDocBlockInput = {
   explanationShort: string
   docPageId?: number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedCreateNestedOneWithoutTaskQuestionInput
   attempts?: Prisma.AttemptUncheckedCreateNestedManyWithoutQuestionInput
 }
 
@@ -1048,6 +1082,56 @@ export type QuestionCreateOrConnectWithoutAnswerDocBlockInput = {
 export type QuestionCreateManyAnswerDocBlockInputEnvelope = {
   data: Prisma.QuestionCreateManyAnswerDocBlockInput | Prisma.QuestionCreateManyAnswerDocBlockInput[]
   skipDuplicates?: boolean
+}
+
+export type QuestionCreateWithoutTaskDocBlockInput = {
+  slug: string
+  difficulty: $Enums.Difficulty
+  type: $Enums.QuestionType
+  phase?: $Enums.QuestionPhase
+  rankSlug?: string | null
+  prompt: string
+  code?: string | null
+  choicesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  filesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  expectedJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  tip1: string
+  tip2?: string | null
+  explanationShort: string
+  referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  topic: Prisma.TopicCreateNestedOneWithoutQuestionsInput
+  docPage?: Prisma.DocPageCreateNestedOneWithoutQuestionsInput
+  answerDocBlock?: Prisma.DocBlockCreateNestedOneWithoutAnswerForInput
+  attempts?: Prisma.AttemptCreateNestedManyWithoutQuestionInput
+}
+
+export type QuestionUncheckedCreateWithoutTaskDocBlockInput = {
+  id?: number
+  slug: string
+  topicId: number
+  difficulty: $Enums.Difficulty
+  type: $Enums.QuestionType
+  phase?: $Enums.QuestionPhase
+  rankSlug?: string | null
+  prompt: string
+  code?: string | null
+  choicesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  filesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  expectedJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  tip1: string
+  tip2?: string | null
+  explanationShort: string
+  docPageId?: number | null
+  answerDocBlockId?: number | null
+  referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  attempts?: Prisma.AttemptUncheckedCreateNestedManyWithoutQuestionInput
+}
+
+export type QuestionCreateOrConnectWithoutTaskDocBlockInput = {
+  where: Prisma.QuestionWhereUniqueInput
+  create: Prisma.XOR<Prisma.QuestionCreateWithoutTaskDocBlockInput, Prisma.QuestionUncheckedCreateWithoutTaskDocBlockInput>
 }
 
 export type QuestionUpsertWithWhereUniqueWithoutAnswerDocBlockInput = {
@@ -1064,6 +1148,62 @@ export type QuestionUpdateWithWhereUniqueWithoutAnswerDocBlockInput = {
 export type QuestionUpdateManyWithWhereWithoutAnswerDocBlockInput = {
   where: Prisma.QuestionScalarWhereInput
   data: Prisma.XOR<Prisma.QuestionUpdateManyMutationInput, Prisma.QuestionUncheckedUpdateManyWithoutAnswerDocBlockInput>
+}
+
+export type QuestionUpsertWithoutTaskDocBlockInput = {
+  update: Prisma.XOR<Prisma.QuestionUpdateWithoutTaskDocBlockInput, Prisma.QuestionUncheckedUpdateWithoutTaskDocBlockInput>
+  create: Prisma.XOR<Prisma.QuestionCreateWithoutTaskDocBlockInput, Prisma.QuestionUncheckedCreateWithoutTaskDocBlockInput>
+  where?: Prisma.QuestionWhereInput
+}
+
+export type QuestionUpdateToOneWithWhereWithoutTaskDocBlockInput = {
+  where?: Prisma.QuestionWhereInput
+  data: Prisma.XOR<Prisma.QuestionUpdateWithoutTaskDocBlockInput, Prisma.QuestionUncheckedUpdateWithoutTaskDocBlockInput>
+}
+
+export type QuestionUpdateWithoutTaskDocBlockInput = {
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  difficulty?: Prisma.EnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty
+  type?: Prisma.EnumQuestionTypeFieldUpdateOperationsInput | $Enums.QuestionType
+  phase?: Prisma.EnumQuestionPhaseFieldUpdateOperationsInput | $Enums.QuestionPhase
+  rankSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prompt?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choicesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  filesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  expectedJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  tip1?: Prisma.StringFieldUpdateOperationsInput | string
+  tip2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  explanationShort?: Prisma.StringFieldUpdateOperationsInput | string
+  referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  topic?: Prisma.TopicUpdateOneRequiredWithoutQuestionsNestedInput
+  docPage?: Prisma.DocPageUpdateOneWithoutQuestionsNestedInput
+  answerDocBlock?: Prisma.DocBlockUpdateOneWithoutAnswerForNestedInput
+  attempts?: Prisma.AttemptUpdateManyWithoutQuestionNestedInput
+}
+
+export type QuestionUncheckedUpdateWithoutTaskDocBlockInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  topicId?: Prisma.IntFieldUpdateOperationsInput | number
+  difficulty?: Prisma.EnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty
+  type?: Prisma.EnumQuestionTypeFieldUpdateOperationsInput | $Enums.QuestionType
+  phase?: Prisma.EnumQuestionPhaseFieldUpdateOperationsInput | $Enums.QuestionPhase
+  rankSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prompt?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  choicesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  filesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  expectedJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  tip1?: Prisma.StringFieldUpdateOperationsInput | string
+  tip2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  explanationShort?: Prisma.StringFieldUpdateOperationsInput | string
+  docPageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  answerDocBlockId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  attempts?: Prisma.AttemptUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionCreateWithoutAttemptsInput = {
@@ -1085,6 +1225,7 @@ export type QuestionCreateWithoutAttemptsInput = {
   topic: Prisma.TopicCreateNestedOneWithoutQuestionsInput
   docPage?: Prisma.DocPageCreateNestedOneWithoutQuestionsInput
   answerDocBlock?: Prisma.DocBlockCreateNestedOneWithoutAnswerForInput
+  taskDocBlock?: Prisma.DocBlockCreateNestedOneWithoutTaskQuestionInput
 }
 
 export type QuestionUncheckedCreateWithoutAttemptsInput = {
@@ -1107,6 +1248,7 @@ export type QuestionUncheckedCreateWithoutAttemptsInput = {
   docPageId?: number | null
   answerDocBlockId?: number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedCreateNestedOneWithoutTaskQuestionInput
 }
 
 export type QuestionCreateOrConnectWithoutAttemptsInput = {
@@ -1144,6 +1286,7 @@ export type QuestionUpdateWithoutAttemptsInput = {
   topic?: Prisma.TopicUpdateOneRequiredWithoutQuestionsNestedInput
   docPage?: Prisma.DocPageUpdateOneWithoutQuestionsNestedInput
   answerDocBlock?: Prisma.DocBlockUpdateOneWithoutAnswerForNestedInput
+  taskDocBlock?: Prisma.DocBlockUpdateOneWithoutTaskQuestionNestedInput
 }
 
 export type QuestionUncheckedUpdateWithoutAttemptsInput = {
@@ -1166,6 +1309,7 @@ export type QuestionUncheckedUpdateWithoutAttemptsInput = {
   docPageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   answerDocBlockId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedUpdateOneWithoutTaskQuestionNestedInput
 }
 
 export type QuestionCreateManyTopicInput = {
@@ -1207,6 +1351,7 @@ export type QuestionUpdateWithoutTopicInput = {
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   docPage?: Prisma.DocPageUpdateOneWithoutQuestionsNestedInput
   answerDocBlock?: Prisma.DocBlockUpdateOneWithoutAnswerForNestedInput
+  taskDocBlock?: Prisma.DocBlockUpdateOneWithoutTaskQuestionNestedInput
   attempts?: Prisma.AttemptUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1229,6 +1374,7 @@ export type QuestionUncheckedUpdateWithoutTopicInput = {
   docPageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   answerDocBlockId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedUpdateOneWithoutTaskQuestionNestedInput
   attempts?: Prisma.AttemptUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1292,6 +1438,7 @@ export type QuestionUpdateWithoutDocPageInput = {
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.TopicUpdateOneRequiredWithoutQuestionsNestedInput
   answerDocBlock?: Prisma.DocBlockUpdateOneWithoutAnswerForNestedInput
+  taskDocBlock?: Prisma.DocBlockUpdateOneWithoutTaskQuestionNestedInput
   attempts?: Prisma.AttemptUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1314,6 +1461,7 @@ export type QuestionUncheckedUpdateWithoutDocPageInput = {
   explanationShort?: Prisma.StringFieldUpdateOperationsInput | string
   answerDocBlockId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedUpdateOneWithoutTaskQuestionNestedInput
   attempts?: Prisma.AttemptUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1377,6 +1525,7 @@ export type QuestionUpdateWithoutAnswerDocBlockInput = {
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.TopicUpdateOneRequiredWithoutQuestionsNestedInput
   docPage?: Prisma.DocPageUpdateOneWithoutQuestionsNestedInput
+  taskDocBlock?: Prisma.DocBlockUpdateOneWithoutTaskQuestionNestedInput
   attempts?: Prisma.AttemptUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1399,6 +1548,7 @@ export type QuestionUncheckedUpdateWithoutAnswerDocBlockInput = {
   explanationShort?: Prisma.StringFieldUpdateOperationsInput | string
   docPageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   referencesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  taskDocBlock?: Prisma.DocBlockUncheckedUpdateOneWithoutTaskQuestionNestedInput
   attempts?: Prisma.AttemptUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1477,6 +1627,7 @@ export type QuestionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   topic?: boolean | Prisma.TopicDefaultArgs<ExtArgs>
   docPage?: boolean | Prisma.Question$docPageArgs<ExtArgs>
   answerDocBlock?: boolean | Prisma.Question$answerDocBlockArgs<ExtArgs>
+  taskDocBlock?: boolean | Prisma.Question$taskDocBlockArgs<ExtArgs>
   attempts?: boolean | Prisma.Question$attemptsArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["question"]>
@@ -1510,6 +1661,7 @@ export type QuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   topic?: boolean | Prisma.TopicDefaultArgs<ExtArgs>
   docPage?: boolean | Prisma.Question$docPageArgs<ExtArgs>
   answerDocBlock?: boolean | Prisma.Question$answerDocBlockArgs<ExtArgs>
+  taskDocBlock?: boolean | Prisma.Question$taskDocBlockArgs<ExtArgs>
   attempts?: boolean | Prisma.Question$attemptsArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1520,6 +1672,7 @@ export type $QuestionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     topic: Prisma.$TopicPayload<ExtArgs>
     docPage: Prisma.$DocPagePayload<ExtArgs> | null
     answerDocBlock: Prisma.$DocBlockPayload<ExtArgs> | null
+    taskDocBlock: Prisma.$DocBlockPayload<ExtArgs> | null
     attempts: Prisma.$AttemptPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1885,6 +2038,7 @@ export interface Prisma__QuestionClient<T, Null = never, ExtArgs extends runtime
   topic<T extends Prisma.TopicDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TopicDefaultArgs<ExtArgs>>): Prisma.Prisma__TopicClient<runtime.Types.Result.GetResult<Prisma.$TopicPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   docPage<T extends Prisma.Question$docPageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Question$docPageArgs<ExtArgs>>): Prisma.Prisma__DocPageClient<runtime.Types.Result.GetResult<Prisma.$DocPagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   answerDocBlock<T extends Prisma.Question$answerDocBlockArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Question$answerDocBlockArgs<ExtArgs>>): Prisma.Prisma__DocBlockClient<runtime.Types.Result.GetResult<Prisma.$DocBlockPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  taskDocBlock<T extends Prisma.Question$taskDocBlockArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Question$taskDocBlockArgs<ExtArgs>>): Prisma.Prisma__DocBlockClient<runtime.Types.Result.GetResult<Prisma.$DocBlockPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   attempts<T extends Prisma.Question$attemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Question$attemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2299,6 +2453,25 @@ export type Question$docPageArgs<ExtArgs extends runtime.Types.Extensions.Intern
  * Question.answerDocBlock
  */
 export type Question$answerDocBlockArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocBlock
+   */
+  select?: Prisma.DocBlockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocBlock
+   */
+  omit?: Prisma.DocBlockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocBlockInclude<ExtArgs> | null
+  where?: Prisma.DocBlockWhereInput
+}
+
+/**
+ * Question.taskDocBlock
+ */
+export type Question$taskDocBlockArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the DocBlock
    */

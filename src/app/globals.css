@@ -81,7 +81,7 @@ a {
   backdrop-filter: blur(12px);
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 0.9rem;
+  border-radius: 0;
   box-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
 }
 
@@ -89,8 +89,23 @@ a {
   backdrop-filter: blur(14px);
   background: var(--panel-strong);
   border: 1px solid var(--border);
-  border-radius: 1.1rem;
+  border-radius: 0;
   box-shadow: 0 20px 55px rgba(2, 6, 23, 0.45);
+}
+
+.rounded,
+.rounded-sm,
+.rounded-md,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl,
+.rounded-full {
+  border-radius: 0 !important;
+}
+
+:where([class*="rounded"]) {
+  border-radius: 0 !important;
 }
 
 .glow {

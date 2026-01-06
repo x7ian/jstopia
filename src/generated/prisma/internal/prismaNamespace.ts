@@ -1181,7 +1181,8 @@ export const DocBlockScalarFieldEnum = {
   kind: 'kind',
   order: 'order',
   excerpt: 'excerpt',
-  contentMd: 'contentMd'
+  contentMd: 'contentMd',
+  taskQuestionId: 'taskQuestionId'
 } as const
 
 export type DocBlockScalarFieldEnum = (typeof DocBlockScalarFieldEnum)[keyof typeof DocBlockScalarFieldEnum]

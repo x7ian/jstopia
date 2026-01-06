@@ -7,7 +7,6 @@ import { javascript } from '@codemirror/lang-javascript'
 import { html } from '@codemirror/lang-html'
 import { css } from '@codemirror/lang-css'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { cn } from '@/lib/utils'
 import { PlaygroundConsole } from '@/components/playground/PlaygroundConsole'
 import { PlaygroundTabs } from '@/components/playground/PlaygroundTabs'
 import { buildSrcDoc, type PlaygroundConsoleMessage, type PlaygroundFile, type PlaygroundRunResult } from '@/components/playground/iframeBridge'
@@ -45,7 +44,7 @@ export const Playground = forwardRef<PlaygroundHandle, PlaygroundProps>(function
     previewHeight = DEFAULT_PREVIEW_HEIGHT,
     readOnly = false,
     showConsole = true,
-    showPreview,
+    showPreview: _showPreview,
     onRunComplete,
     onFilesChange,
   },
@@ -74,11 +73,6 @@ export const Playground = forwardRef<PlaygroundHandle, PlaygroundProps>(function
   const [resultText, setResultText] = useState('')
   const [iframeKey, setIframeKey] = useState(0)
   const [srcDoc, setSrcDoc] = useState('')
-  const defaultShowPreview = useMemo(
-    () => showPreview ?? currentFiles.some((file) => file.language === 'html' || file.language === 'css'),
-    [showPreview, currentFiles]
-  )
-  const [previewOpen, setPreviewOpen] = useState(defaultShowPreview)
 
   useEffect(() => {
     if (!initialFilesRef.current) {
@@ -89,9 +83,7 @@ export const Playground = forwardRef<PlaygroundHandle, PlaygroundProps>(function
   useEffect(() => {
     setCurrentFiles(initialFiles)
     setActiveFile(initialFiles[0]?.name ?? '')
-    const shouldShow = showPreview ?? initialFiles.some((file) => file.language === 'html' || file.language === 'css')
-    setPreviewOpen(shouldShow)
-  }, [initialFiles, showPreview])
+  }, [initialFiles])
 
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
@@ -227,43 +219,14 @@ export const Playground = forwardRef<PlaygroundHandle, PlaygroundProps>(function
   }, [activeFile, currentFiles])
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {title ? <h3 className="text-sm font-semibold text-slate-100">{title}</h3> : null}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => run()}
-            className="rounded-full border border-cyan-300/40 bg-cyan-400/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-100"
-          >
-            Run
-          </button>
-          <button
-            type="button"
-            onClick={reset}
-            className="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-200"
-          >
-            Reset
-          </button>
-          <button
-            type="button"
-            onClick={stop}
-            className="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300"
-          >
-            Stop
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+    <div className="border border-white/10 bg-white/5 p-0">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-0 py-1">
         <PlaygroundTabs files={currentFiles} activeFile={activeFile} onSelect={setActiveFile} />
-        <span className="text-[0.6rem] uppercase tracking-[0.3em] text-slate-400">
-          {readOnly ? 'Read only' : 'Editable'}
-        </span>
+        <span className="sr-only">{readOnly ? 'Read only' : 'Editable'}</span>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-3">
+      <div className="grid gap-0 px-0 pb-0 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="border border-white/10 bg-slate-950/50 p-0">
           <CodeMirror
             value={activeFileContent}
             height={`${height}px`}
@@ -274,34 +237,51 @@ export const Playground = forwardRef<PlaygroundHandle, PlaygroundProps>(function
           />
         </div>
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-[0.6rem] uppercase tracking-[0.3em] text-slate-400">
-            <span>Output</span>
-            <button
-              type="button"
-              onClick={() => setPreviewOpen((prev) => !prev)}
-              className="rounded-full border border-white/10 px-3 py-1 text-[0.6rem] uppercase tracking-[0.3em] text-slate-300 hover:border-white/30"
-            >
-              {previewOpen ? 'Collapse' : 'Show Output Window'}
-            </button>
+        <div className="flex flex-col gap-0" style={{ height }}>
+          <div className="flex flex-[2] flex-col border border-white/10 bg-white text-slate-900">
+            <div className="flex items-center justify-between px-3 py-2 text-[0.6rem] uppercase tracking-[0.3em]">
+              <span>Output</span>
+            </div>
+            <div className="flex-1 border-t border-slate-200">
+              <iframe
+                key={iframeKey}
+                sandbox="allow-scripts"
+                title="Playground Preview"
+                className="h-full w-full"
+                srcDoc={srcDoc}
+              />
+            </div>
           </div>
-          <div
-            className={cn(
-              'rounded-2xl border border-white/10 bg-black/30 transition-all',
-              previewOpen ? 'opacity-100' : 'h-0 overflow-hidden border-transparent opacity-0'
-            )}
-          >
-            <iframe
-              key={iframeKey}
-              sandbox="allow-scripts"
-              title="Playground Preview"
-              className={cn('w-full rounded-2xl', previewOpen ? 'h-full' : 'h-[1px]')}
-              style={{ height: previewOpen ? previewHeight : 1 }}
-              srcDoc={srcDoc}
-            />
-          </div>
-          {showConsole ? <PlaygroundConsole logs={logs} errors={errors} onClear={() => setLogs([])} /> : null}
+          {showConsole ? (
+            <div className="flex-1">
+              <PlaygroundConsole logs={logs} errors={errors} />
+            </div>
+          ) : null}
         </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center justify-start gap-2 px-2">
+        <button
+          type="button"
+          onClick={() => run()}
+          className="rounded-full border border-cyan-300/40 bg-cyan-400/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-100"
+        >
+          Run
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-200"
+        >
+          Reset
+        </button>
+        <button
+          type="button"
+          onClick={stop}
+          className="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-300"
+        >
+          Stop
+        </button>
       </div>
     </div>
   )

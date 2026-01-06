@@ -57,51 +57,52 @@ export function TopicHUD({
           <MasteryMeter valueHalfSteps={masteryHalfSteps} />
         </div>
       </div>
-      <div className="flex flex-wrap items-center text-xs text-[color:var(--text)]">
-        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Correct</span>
-        <span className="ml-2 font-semibold text-emerald-400">{correctCount}</span>
-        <span className="mx-3 text-[color:var(--muted)]">|</span>
-        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Wrong</span>
-        <span className="ml-2 font-semibold text-rose-400">{wrongCount}</span>
-        <span className="mx-3 text-[color:var(--muted)]">|</span>
-        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Micro Streak</span>
-        <span className="ml-2 font-semibold text-amber-300">
-          {microStreak ?? streak}
-        </span>
-        <span className="mx-3 text-[color:var(--muted)]">|</span>
-        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Quiz Streak</span>
-        <span className="ml-2 font-semibold text-sky-300">
-          {quizStreak ?? streak}
-        </span>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[0.65rem] uppercase tracking-[0.25em] text-[color:var(--muted)]">
+        <div className="flex items-center justify-between">
+          <span>Correct</span>
+          <span className="font-semibold text-emerald-400">{correctCount}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span>Wrong</span>
+          <span className="font-semibold text-rose-400">{wrongCount}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span>Micro Streak</span>
+          <span className="font-semibold text-amber-300">{microStreak ?? streak}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span>Quiz Streak</span>
+          <span className="font-semibold text-sky-300">{quizStreak ?? streak}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span>Quiz</span>
+          <span className="font-semibold text-[color:var(--text)]">
+            {quizIndex}/{quizTotal}
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span>XP</span>
+          <span className="font-semibold text-[color:var(--text)]">
+            {totalScore} · {topicScore}
+          </span>
+        </div>
         {shieldCount > 0 ? (
-          <>
-            <span className="mx-3 text-[color:var(--muted)]">|</span>
-            <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Shield</span>
-            <span className="ml-2 font-semibold text-sky-300">{shieldCount}</span>
-          </>
+          <div className="flex items-center justify-between">
+            <span>Shield</span>
+            <span className="font-semibold text-sky-300">{shieldCount}</span>
+          </div>
         ) : null}
         {hintTokens > 0 ? (
-          <>
-            <span className="mx-3 text-[color:var(--muted)]">|</span>
-            <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Hints</span>
-            <span className="ml-2 font-semibold text-amber-200">{hintTokens}</span>
-          </>
+          <div className="flex items-center justify-between">
+            <span>Hints</span>
+            <span className="font-semibold text-amber-200">{hintTokens}</span>
+          </div>
         ) : null}
-        <span className="mx-3 text-[color:var(--muted)]">|</span>
-        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">Quiz</span>
-        <span className="ml-2 font-semibold text-[color:var(--text)]">
-          {quizIndex}/{quizTotal}
-        </span>
-        <span className="mx-3 text-[color:var(--muted)]">|</span>
-        <span className="uppercase tracking-[0.3em] text-[color:var(--muted)]">XP</span>
-        <span className="ml-2 font-semibold text-[color:var(--text)]">
-          Total {totalScore} · Lesson {topicScore}
-        </span>
         {lastDelta ? (
-          <>
-            <span className="mx-3 text-[color:var(--muted)]">|</span>
-            <span className="font-semibold text-emerald-400">+{lastDelta} XP</span>
-          </>
+          <div className="flex items-center justify-between">
+            <span>+XP</span>
+            <span className="font-semibold text-emerald-400">+{lastDelta}</span>
+          </div>
         ) : null}
       </div>
     </div>

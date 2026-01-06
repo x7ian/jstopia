@@ -93,6 +93,116 @@ export const questionsSeed = [
     answerDocBlockAnchor: 'let-basics',
   },
   {
+    slug: 'vars-sample-campfire-counter',
+    difficulty: 'basic',
+    type: 'code',
+    phase: 'sample',
+    prompt: 'Campfire Counter sample (open CODE).',
+    files: [
+      {
+        name: 'index.html',
+        language: 'html',
+        content: `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campfire Counter</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="card">
+      <h1>Campfire Counter</h1>
+      <p>Count: <span id="count">0</span></p>
+      <button id="add">Add one</button>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>`,
+      },
+      {
+        name: 'styles.css',
+        language: 'css',
+        content: `:root {
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #0f1f1a;
+  color: #eafaf1;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+.card {
+  background: #142a22;
+  border: 1px solid #2d5746;
+  padding: 24px 28px;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+button {
+  margin-top: 12px;
+  padding: 8px 16px;
+  border: 1px solid #3ddc84;
+  background: #1f6f4a;
+  color: #f5fff9;
+  cursor: pointer;
+}`,
+      },
+      {
+        name: 'main.js',
+        language: 'js',
+        content: `let count = 0;
+const countEl = document.getElementById("count");
+const addBtn = document.getElementById("add");
+
+function render() {
+  countEl.textContent = String(count);
+}
+
+addBtn.addEventListener("click", () => {
+  count += 1;
+  render();
+});
+
+render();`,
+      },
+    ],
+    expected: { mode: 'noConsoleErrors' },
+    answer: 'Campfire Counter',
+    tip1: 'Open the CODE panel to run this sample.',
+    explanationShort: 'A small counter that updates the DOM on each click.',
+    references: ['MDN: Document.querySelector'],
+    answerDocBlockAnchor: 'let-basics',
+  },
+  {
+    slug: 'vars-sample-rename-reassign',
+    difficulty: 'basic',
+    type: 'code',
+    phase: 'sample',
+    prompt: 'Rename & Reassign sample (open CODE).',
+    files: [
+      {
+        name: 'main.js',
+        language: 'js',
+        content: `let name = "Ada";
+let score = 10;
+score = score + 1;
+console.log(name + " — Level " + score);
+console.log(name + " leveled up!");`,
+      },
+    ],
+    expected: { mode: 'noConsoleErrors' },
+    answer: 'Rename & Reassign',
+    tip1: 'Open the CODE panel to run this sample.',
+    explanationShort: 'A short example showing reassignment and clear naming.',
+    references: ['MDN: let'],
+    answerDocBlockAnchor: 'naming-and-typo-tips',
+  },
+  {
     slug: 'vars-var-legacy',
     difficulty: 'basic',
     type: 'mcq',
@@ -623,6 +733,54 @@ export const constQuestionsSeed = [
     explanationShort: 'Use const by default and switch to let only if reassignment is required.',
     references: ['MDN: const'],
     answerDocBlockAnchor: 'when-to-use-const',
+  },
+  {
+    slug: 'const-sample-anchor-rope',
+    difficulty: 'basic',
+    type: 'code',
+    phase: 'sample',
+    prompt: 'Anchor Rope sample (open CODE).',
+    files: [
+      {
+        name: 'main.js',
+        language: 'js',
+        content: `const PI = 3.14159;
+let radius = 4;
+const circumference = 2 * PI * radius;
+console.log("Radius " + radius + " → " + circumference.toFixed(2));
+console.log("Circumference: " + circumference.toFixed(2));`,
+      },
+    ],
+    expected: { mode: 'noConsoleErrors' },
+    answer: 'Anchor Rope',
+    tip1: 'Open the CODE panel to run this sample.',
+    explanationShort: 'A const for PI with a let radius to demonstrate reassignment.',
+    references: ['MDN: const'],
+    answerDocBlockAnchor: 'when-to-use-const',
+  },
+  {
+    slug: 'const-sample-mutation-vs-reassign',
+    difficulty: 'basic',
+    type: 'code',
+    phase: 'sample',
+    prompt: 'Mutation vs Reassignment sample (open CODE).',
+    files: [
+      {
+        name: 'main.js',
+        language: 'js',
+        content: `const settings = { theme: "forest" };
+settings.theme = "night";
+console.log("theme: " + settings.theme);
+// Uncomment to see the error:
+// settings = {};`,
+      },
+    ],
+    expected: { mode: 'noConsoleErrors' },
+    answer: 'Mutation vs Reassignment',
+    tip1: 'Open the CODE panel to run this sample.',
+    explanationShort: 'Mutation is allowed on const objects; reassignment is not.',
+    references: ['MDN: const'],
+    answerDocBlockAnchor: 'reassignment-vs-mutation',
   },
   {
     slug: 'q-const-code-use-const-let',

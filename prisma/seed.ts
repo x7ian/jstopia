@@ -18,7 +18,7 @@ async function upsertTopicWithDocs(params: {
     slug: string
     difficulty: 'basic' | 'medium' | 'advanced'
     type: 'mcq' | 'code_output' | 'code_complete' | 'code'
-    phase?: 'micro' | 'quiz' | 'boss'
+    phase?: 'micro' | 'quiz' | 'boss' | 'sample'
     rankSlug?: string | null
     docPageSlug?: string
     prompt: string
@@ -160,9 +160,9 @@ async function upsertTopicWithDocs(params: {
       },
     })
 
-    if ((question.phase ?? 'quiz') === 'micro') {
-      await prisma.docBlock.updateMany({
-        where: { id: answerDocBlockId, taskQuestionId: null },
+    if ((question.phase ?? 'quiz') === 'sample') {
+      await prisma.docBlock.update({
+        where: { id: answerDocBlockId },
         data: { taskQuestionId: savedQuestion.id },
       })
     }

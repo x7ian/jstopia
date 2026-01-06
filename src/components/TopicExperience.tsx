@@ -32,6 +32,13 @@ type TopicExperienceProps = {
     excerpt?: string | null
     taskQuestionId?: number | null
   }[]
+  taskQuestions?: {
+    id: number
+    type: 'mcq' | 'code_output' | 'code_complete' | 'code'
+    phase?: string | null
+    filesJson?: { name: string; language: 'html' | 'css' | 'js'; content: string }[] | null
+    expectedJson?: { mode: 'consoleIncludes' | 'domTextEquals' | 'noConsoleErrors'; value?: string } | null
+  }[]
   microQuestions: {
     id: number
     prompt: string
@@ -79,6 +86,7 @@ export function TopicExperience({
   docContent,
   docContentWithMicro,
   docBlocks,
+  taskQuestions = [],
   microQuestions,
   nav,
   quizCount,
@@ -128,6 +136,7 @@ export function TopicExperience({
   const [viewMode, setViewMode] = useState<'coverage' | 'scroll'>('coverage')
   const [showModeToggle, setShowModeToggle] = useState(false)
   const [mobileTab, setMobileTab] = useState<'lesson' | 'code'>('lesson')
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [editorOpen, setEditorOpen] = useState(true)
   const [editorFilesByStep, setEditorFilesByStep] = useState<Record<string, PlaygroundFile[]>>({})
   const [flowIndex, setFlowIndex] = useState(0)
@@ -145,6 +154,9 @@ export function TopicExperience({
   const lessonCompletionSent = useRef(false)
 
   const orderedBlocks = useMemo(() => docBlocks ?? [], [docBlocks])
+  const taskQuestionById = useMemo(() => {
+    return new Map(taskQuestions.map((question) => [question.id, question]))
+  }, [taskQuestions])
   const microHalfStepsPerCorrect = useMemo(() => {
     if (!microQuestions.length) return 0
     return 3 / microQuestions.length
@@ -164,11 +176,18 @@ export function TopicExperience({
   const totalBlocks = orderedBlocks.length
   const currentMicroQuestion = useMemo(() => {
     if (!currentBlock) return null
-    if (currentBlock.taskQuestionId) {
-      return microQuestions.find((question) => question.id === currentBlock.taskQuestionId) ?? null
-    }
     return microQuestions.find((question) => question.answerDocBlockAnchor === currentBlock.anchor) ?? null
   }, [currentBlock, microQuestions])
+  const currentTaskQuestion = useMemo(() => {
+    if (!currentBlock?.taskQuestionId) return null
+    return taskQuestionById.get(currentBlock.taskQuestionId) ?? null
+  }, [currentBlock?.taskQuestionId, taskQuestionById])
+  const editorSourceQuestion =
+    currentTaskQuestion?.type === 'code' && currentTaskQuestion.filesJson?.length
+      ? currentTaskQuestion
+      : currentMicroQuestion?.type === 'code' && currentMicroQuestion.filesJson?.length
+        ? currentMicroQuestion
+        : null
   const lastCodeStepRef = useRef<string | null>(null)
   const defaultEditorFiles = useMemo<PlaygroundFile[]>(
     () => [
@@ -181,20 +200,20 @@ export function TopicExperience({
     []
   )
   const editorStepKey = useMemo(() => {
-    if (currentMicroQuestion?.type === 'code' && currentMicroQuestion.id) {
-      return `q-${currentMicroQuestion.id}`
+    if (editorSourceQuestion?.type === 'code' && editorSourceQuestion.id) {
+      return `q-${editorSourceQuestion.id}`
     }
     return lastCodeStepRef.current ?? 'default'
-  }, [currentMicroQuestion?.id, currentMicroQuestion?.type])
+  }, [editorSourceQuestion?.id, editorSourceQuestion?.type])
   const editorFiles = useMemo(() => {
     if (editorFilesByStep[editorStepKey]) {
       return editorFilesByStep[editorStepKey]
     }
-    if (currentMicroQuestion?.type === 'code' && currentMicroQuestion.filesJson?.length) {
-      return currentMicroQuestion.filesJson
+    if (editorSourceQuestion?.type === 'code' && editorSourceQuestion.filesJson?.length) {
+      return editorSourceQuestion.filesJson
     }
     return defaultEditorFiles
-  }, [currentMicroQuestion?.filesJson, currentMicroQuestion?.type, defaultEditorFiles, editorFilesByStep, editorStepKey])
+  }, [defaultEditorFiles, editorFilesByStep, editorSourceQuestion?.filesJson, editorSourceQuestion?.type, editorStepKey])
 
   const hudDisplay = useMemo(() => hud, [hud])
 
@@ -212,6 +231,14 @@ export function TopicExperience({
 
   const isCoverageMode = viewMode === 'coverage'
   const showQuizSection = viewMode !== 'coverage' || isQuizStep
+  const activeSectionAnchor =
+    viewMode === 'coverage'
+      ? currentStep?.type === 'objectives'
+        ? '__objectives'
+        : currentStep?.type === 'quiz'
+          ? 'quiz'
+          : currentBlock?.anchor ?? null
+      : null
 
   const anchorToIndex = useMemo(() => {
     const entries: Array<[string, number]> = [['__objectives', 0], ...orderedBlocks.map((block, index) => [block.anchor, index + 1])]
@@ -235,6 +262,31 @@ export function TopicExperience({
     })
   }
 
+  const handleSectionSelect = (anchor: string) => {
+    if (viewMode === 'coverage') {
+      setMobileTab('lesson')
+      const nextIndex = anchorToIndex.get(anchor)
+      if (nextIndex !== undefined) {
+        setFlowIndex(nextIndex)
+        setFlowStatus('idle')
+        setFlowSelected(null)
+        setFlowShowTip2(false)
+        setFlowXpDelta(null)
+      }
+      scrollToFlowTop()
+      return
+    }
+    if (anchor === '__objectives') {
+      scrollToFlowTop()
+      return
+    }
+    if (anchor === 'quiz') {
+      scrollToId('quiz')
+      return
+    }
+    scrollToAnchor(anchor)
+  }
+
   useEffect(() => {
     if (!sessionToken || !showQuizSection) return
     const key = `jstopia:${sessionToken}:${topic.slug}:headstart`
@@ -248,14 +300,14 @@ export function TopicExperience({
   }, [sessionToken, showQuizSection, microProgressHalfSteps, topic.slug])
 
   useEffect(() => {
-    if (currentMicroQuestion?.type !== 'code' || !currentMicroQuestion.filesJson?.length) return
-    const stepKey = `q-${currentMicroQuestion.id}`
+    if (editorSourceQuestion?.type !== 'code' || !editorSourceQuestion.filesJson?.length) return
+    const stepKey = `q-${editorSourceQuestion.id}`
     lastCodeStepRef.current = stepKey
     setEditorFilesByStep((prev) => {
       if (prev[stepKey]) return prev
-      return { ...prev, [stepKey]: currentMicroQuestion.filesJson as PlaygroundFile[] }
+      return { ...prev, [stepKey]: editorSourceQuestion.filesJson as PlaygroundFile[] }
     })
-  }, [currentMicroQuestion?.id, currentMicroQuestion?.filesJson, currentMicroQuestion?.type])
+  }, [editorSourceQuestion?.filesJson, editorSourceQuestion?.id, editorSourceQuestion?.type])
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY)
@@ -659,10 +711,24 @@ export function TopicExperience({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-6 pb-12 pt-[13.5rem] text-[17px] leading-relaxed text-[color:var(--text)] lg:mx-0 lg:ml-auto lg:mr-[18rem] lg:w-[calc(100%-18rem-1.5rem)] lg:max-w-[calc(100%-18rem-1.5rem)]">
-      <div className="fixed left-0 right-0 top-4 z-40 px-6">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full glass-strong px-4 py-2 text-xs uppercase tracking-[0.3em] text-[color:var(--muted)] lg:mx-0 lg:ml-auto lg:mr-[18rem] lg:w-[calc(100%-18rem-1.5rem)] lg:max-w-[calc(100%-18rem-1.5rem)]">
-          <div className="flex items-center gap-3">
+    <div className="flex w-full flex-1 flex-col gap-0 px-0 pb-0 pt-0 text-[17px] leading-relaxed text-[color:var(--text)]">
+      <div className="w-full glass-strong px-4 py-2 text-xs uppercase tracking-[0.3em] text-[color:var(--muted)]">
+        <div className="grid items-center gap-3 sm:grid-cols-[auto_1fr_auto]">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            aria-expanded={sidebarOpen}
+            className={cn(
+              'inline-flex items-center gap-2 border border-[color:var(--border)] px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.3em] transition',
+              sidebarOpen
+                ? 'bg-[color:var(--accent2)] text-slate-900'
+                : 'bg-[color:var(--panel)] text-[color:var(--muted)]'
+            )}
+          >
+            <span aria-hidden>☰</span>
+            {flowLabel}
+          </button>
+          <div className="flex justify-center">
             <Image
               src="/brand/javascriptopia_logo_cropped.png"
               alt="Javascriptopia"
@@ -671,81 +737,65 @@ export function TopicExperience({
               priority
               className="h-8 w-auto drop-shadow-[0_0_12px_rgba(56,189,248,0.4)]"
             />
-            <Link
-              href="/journey"
-              className="inline-flex items-center gap-2 rounded-full btn-secondary px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.3em]"
-            >
-              <span aria-hidden>←</span>
-              Back to Journey
-            </Link>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-[0.6rem] text-[color:var(--muted)]">Learn · Play · Master</span>
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setEditorOpen((prev) => !prev)}
+              className={cn(
+                'border border-[color:var(--border)] px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.3em] transition',
+                editorOpen
+                  ? 'bg-[color:var(--accent2)] text-slate-900'
+                  : 'bg-[color:var(--panel)] text-[color:var(--muted)]'
+              )}
+            >
+              Code
+            </button>
             <UserMenu />
           </div>
         </div>
       </div>
 
-      <div className="fixed left-0 right-0 top-16 z-30 px-6">
-        <div className="mx-auto w-full max-w-6xl lg:mx-0 lg:ml-auto lg:mr-[18rem] lg:w-[calc(100%-18rem-1.5rem)] lg:max-w-[calc(100%-18rem-1.5rem)]">
-        <div className="glass-strong rounded-2xl p-2 text-xs text-[color:var(--text)]">
-            <div className="mt-3">
-              <TopicHUD
-                {...hudDisplay}
-                rankSlug={rankState?.currentRank?.slug ?? 'unranked'}
-                rankTitle={rankState?.currentRank?.title ?? 'Unranked'}
-                trialAvailable={false}
-                trialSlug={null}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <StickyTopicControls
-        mode={mode}
-        onModeChange={setMode}
-        progressText={progressText}
-        sections={sectionsForMenu}
-        showMenu={showMenu}
-        onToggleMenu={() => setShowMenu((prev) => !prev)}
-        onSelectSection={(anchor) => {
-          if (viewMode === 'coverage') {
-            setMobileTab('lesson')
-            const nextIndex = anchorToIndex.get(anchor)
-            if (nextIndex !== undefined) {
-              setFlowIndex(nextIndex)
-              setFlowStatus('idle')
-              setFlowSelected(null)
-              setFlowShowTip2(false)
-              setFlowXpDelta(null)
+      <div
+        className={cn(
+          'grid gap-0',
+          sidebarOpen ? 'lg:grid-cols-[18rem_minmax(0,1fr)]' : 'lg:grid-cols-[minmax(0,1fr)]'
+        )}
+      >
+        {sidebarOpen ? (
+          <StickyTopicControls
+            progressText={progressText}
+            sections={sectionsForMenu}
+            showMenu={showMenu}
+            onToggleMenu={() => setShowMenu((prev) => !prev)}
+            onSelectSection={handleSectionSelect}
+              side="left"
+              showProgress
+              showViewModeToggle={showModeToggle}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              fixed={false}
+              showBackToJourney
+              activeAnchorOverride={
+              viewMode === 'coverage'
+                ? currentStep?.type === 'objectives'
+                  ? '__objectives'
+                  : currentStep?.type === 'quiz'
+                    ? 'quiz'
+                  : currentBlock?.anchor ?? null
+                : null
             }
-            scrollToFlowTop()
-            return
-          }
-          if (anchor === '__objectives') {
-            scrollToFlowTop()
-            return
-          }
-          if (anchor === 'quiz') {
-            scrollToId('quiz')
-            return
-          }
-          scrollToAnchor(anchor)
-        }}
-        activeAnchorOverride={
-          viewMode === 'coverage'
-            ? currentStep?.type === 'objectives'
-              ? '__objectives'
-              : currentStep?.type === 'quiz'
-                ? 'quiz'
-              : currentBlock?.anchor ?? null
-            : null
-        }
-        completedAnchors={completedAnchors}
-        hud={hudDisplay}
-        showProgress={false}
-      />
+            completedAnchors={completedAnchors}
+            hud={hudDisplay}
+            headerTitle={{
+              bookTitle: book.title,
+              chapterTitle: chapter.title,
+              topicTitle: topic.title,
+              storyIntro: topic.storyIntro ?? undefined,
+            }}
+          />
+        ) : null}
+        <div className="flex flex-col gap-0">
       <div className="fixed bottom-6 right-6 z-30 flex items-center gap-2 lg:hidden">
         <button
           type="button"
@@ -779,24 +829,7 @@ export function TopicExperience({
                     key={block.anchor}
                     type="button"
                     onClick={() => {
-                      if (viewMode === 'coverage') {
-                        setMobileTab('lesson')
-                        const nextIndex = anchorToIndex.get(block.anchor)
-                        if (nextIndex !== undefined) {
-                          setFlowIndex(nextIndex)
-                          setFlowStatus('idle')
-                          setFlowSelected(null)
-                          setFlowShowTip2(false)
-                          setFlowXpDelta(null)
-                        }
-                        scrollToFlowTop()
-                      } else {
-                        if (block.anchor === '__objectives') {
-                          scrollToFlowTop()
-                        } else {
-                          scrollToAnchor(block.anchor)
-                        }
-                      }
+                      handleSectionSelect(block.anchor)
                       setMobileMenuOpen(false)
                     }}
                     className="flex w-full items-center justify-between rounded-xl border border-transparent px-3 py-2 text-left text-sm text-slate-700 transition hover:border-sky-200 hover:bg-sky-50"
@@ -817,15 +850,7 @@ export function TopicExperience({
         </div>
       ) : null}
 
-      <header className="space-y-5">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--muted)]">
-              {book.title} • {chapter.title}
-            </p>
-            <h1 className="text-3xl font-semibold text-[color:var(--text)]">{topic.title}</h1>
-            {topic.storyIntro ? <p className="text-base text-[color:var(--muted)]">{topic.storyIntro}</p> : null}
-          </div>
-
+      <header className="space-y-0">
         {viewMode !== 'coverage' && doc?.objectives?.length ? (
           <div className="glass rounded-2xl p-5 text-base text-[color:var(--text)]">
             <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--muted)]">Objectives</p>
@@ -836,56 +861,6 @@ export function TopicExperience({
             </ul>
           </div>
         ) : null}
-
-        <div className="flex flex-wrap items-center gap-3">
-          {showModeToggle ? (
-            <div className="flex overflow-hidden rounded-full border border-[color:var(--border)] bg-[color:var(--panel)] text-xs font-semibold uppercase tracking-[0.3em]">
-              <button
-                type="button"
-                onClick={() => setViewMode('coverage')}
-                className={cn(
-                  'px-4 py-2 transition',
-                  viewMode === 'coverage'
-                    ? 'bg-[color:var(--accent)] text-slate-900'
-                    : 'text-[color:var(--muted)]'
-                )}
-              >
-                Coverage
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('scroll')}
-                className={cn(
-                  'px-4 py-2 transition',
-                  viewMode === 'scroll'
-                    ? 'bg-[color:var(--accent2)] text-slate-900'
-                    : 'text-[color:var(--muted)]'
-                )}
-              >
-                Scrollbook
-              </button>
-            </div>
-          ) : null}
-          {isCoverageMode ? (
-            <span className="rounded-full border border-[color:var(--border)] bg-[color:var(--panel)] px-3 py-1 text-xs uppercase tracking-[0.3em] text-[color:var(--muted)]">
-              {flowLabel}
-            </span>
-          ) : null}
-          {microProgressHalfSteps > 0 ? (
-            <span className="text-xs uppercase tracking-[0.3em] text-[color:var(--muted)]">
-              Micro progress: +{(microProgressHalfSteps / 2).toFixed(1)} pips
-            </span>
-          ) : null}
-          {isCoverageMode ? (
-            <button
-              type="button"
-              onClick={() => setEditorOpen((prev) => !prev)}
-              className="hidden rounded-full border border-[color:var(--border)] bg-[color:var(--panel)] px-4 py-2 text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--text)] lg:inline-flex"
-            >
-              {editorOpen ? 'Hide Code' : 'Show Code'}
-            </button>
-          ) : null}
-        </div>
 
         {isCoverageMode ? (
           <div className="flex items-center gap-2 lg:hidden">
@@ -920,39 +895,25 @@ export function TopicExperience({
           <div className="rounded-full border border-sky-200 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-700">
             {progressText}
           </div>
-          <div className="flex overflow-hidden rounded-full border border-sky-200 bg-white/80 text-xs font-semibold uppercase tracking-[0.3em]">
-            <button
-              type="button"
-              onClick={() => setMode('learn')}
-              className={cn('px-4 py-2 transition', mode === 'learn' ? 'bg-sky-200 text-sky-900' : 'text-slate-500')}
-            >
-              Learn
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('challenge')}
-              className={cn(
-                'px-4 py-2 transition',
-                mode === 'challenge' ? 'bg-amber-200 text-amber-900' : 'text-slate-500'
-              )}
-            >
-              Challenge
-            </button>
-          </div>
         </div>
       </header>
 
-      <div className={cn(isCoverageMode ? 'grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]' : 'block')}>
+      <div
+        className={cn(
+          isCoverageMode ? 'grid gap-0' : 'block',
+          isCoverageMode && editorOpen ? 'lg:grid-cols-2 lg:items-start' : 'lg:grid-cols-1'
+        )}
+      >
         <div
           className={cn(
             isCoverageMode ? (mobileTab === 'lesson' ? 'block' : 'hidden') : 'block',
             'lg:block'
           )}
         >
-          <section id="scrollbook" ref={docRef} className="scroll-mt-24 space-y-6">
+          <section id="scrollbook" ref={docRef} className="scroll-mt-24 space-y-0">
         <DocAnchorHighlighter />
         {viewMode === 'coverage' ? (
-          <div className="space-y-6">
+          <div className="space-y-0">
             {currentStep?.type === 'objectives' ? (
               <div className="glass-strong rounded-3xl p-6 text-base text-[color:var(--text)] md:p-7">
                 <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--muted)]">Objectives</p>
@@ -995,8 +956,8 @@ export function TopicExperience({
             ) : (
               <>
                 {doc ? (
-                  <article className="glass-strong rounded-3xl p-6 text-base text-[color:var(--text)] md:p-7">
-                    <div ref={docContentRef} className="space-y-7">
+                  <article className="glass-strong p-0 text-base text-[color:var(--text)]">
+                    <div ref={docContentRef} className="space-y-0">
                       {docContent}
                     </div>
                   </article>
@@ -1274,43 +1235,14 @@ export function TopicExperience({
           <aside
             className={cn(
               mobileTab === 'code' ? 'block' : 'hidden',
-              'space-y-4 lg:block'
+              editorOpen ? 'lg:block' : 'lg:hidden',
+              'space-y-4'
             )}
           >
-            <div className="glass-strong rounded-3xl p-4 text-sm text-[color:var(--text)]">
-              <div className="flex items-center justify-between">
-                <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--muted)]">Code workspace</p>
-                <button
-                  type="button"
-                  onClick={() => setEditorOpen((prev) => !prev)}
-                  className="hidden rounded-full border border-[color:var(--border)] bg-[color:var(--panel)] px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.3em] text-[color:var(--text)] lg:inline-flex"
-                >
-                  {editorOpen ? 'Collapse' : 'Show Code'}
-                </button>
-              </div>
-              {currentMicroQuestion?.type === 'code' ? (
-                <p className="mt-3 text-sm text-[color:var(--muted)]">{currentMicroQuestion.prompt}</p>
-              ) : (
-                <p className="mt-3 text-sm text-[color:var(--muted)]">
-                  No code challenge for this step. You can still experiment or keep the panel hidden.
-                </p>
-              )}
-              {!editorOpen ? (
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setEditorOpen(true)}
-                    className="rounded-full border border-[color:var(--border)] bg-[color:var(--panel-strong)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--text)]"
-                  >
-                    Show Code
-                  </button>
-                </div>
-              ) : null}
-            </div>
             {editorOpen ? (
               <Playground
                 ref={playgroundRef}
-                title={currentMicroQuestion?.type === 'code' ? 'Code challenge' : 'Playground'}
+                title={undefined}
                 files={editorFiles}
                 key={editorStepKey}
                 showPreview={undefined}
@@ -1328,6 +1260,8 @@ export function TopicExperience({
           </aside>
         ) : null}
       </div>
+      </div>
+    </div>
 
       <RankUpModal
         open={showRankModal}

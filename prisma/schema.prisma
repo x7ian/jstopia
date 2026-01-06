@@ -33,6 +33,7 @@ enum QuestionPhase {
   micro
   quiz
   boss
+  sample
 }
 
 enum ProgressStatus {

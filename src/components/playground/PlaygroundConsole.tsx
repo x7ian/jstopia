@@ -6,25 +6,15 @@ import type { PlaygroundConsoleMessage } from '@/components/playground/iframeBri
 type PlaygroundConsoleProps = {
   logs: PlaygroundConsoleMessage[]
   errors: string[]
-  onClear?: () => void
 }
 
-export function PlaygroundConsole({ logs, errors, onClear }: PlaygroundConsoleProps) {
+export function PlaygroundConsole({ logs, errors }: PlaygroundConsoleProps) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/40 p-4 text-xs text-slate-200">
+    <div className="flex h-full flex-col border border-white/10 bg-black/40 p-4 text-xs text-slate-200">
       <div className="flex items-center justify-between">
         <p className="text-[0.65rem] uppercase tracking-[0.3em] text-slate-400">Console</p>
-        {onClear ? (
-          <button
-            type="button"
-            onClick={onClear}
-            className="text-[0.6rem] uppercase tracking-[0.3em] text-slate-400 hover:text-slate-200"
-          >
-            Clear
-          </button>
-        ) : null}
       </div>
-      <div className="mt-3 max-h-40 space-y-2 overflow-auto font-mono text-[0.7rem]">
+      <div className="mt-3 flex-1 space-y-2 overflow-auto font-mono text-[0.7rem]">
         {logs.length === 0 && errors.length === 0 ? (
           <p className="text-slate-400">No output yet. Run the code to see logs.</p>
         ) : null}

@@ -55,17 +55,9 @@ steps += 1;
 Start with `const`. If you need to rebind, change it to `let`.
 </Callout>
 
-<Playground
-  title="Anchor Rope: const in action"
-  showPreview={false}
-  files={[
-    { name: "main.js", language: "js", content: `const PI = 3.14159;
-let radius = 4;
-const circumference = 2 * PI * radius;
-console.log(\`Radius \${radius} → \${circumference.toFixed(2)}\`);
-console.log(\`Circumference: \${circumference.toFixed(2)}\`);` },
-  ]}
-/>
+<Callout kind="note" title="Try this in CODE">
+Open the CODE panel to run the "Anchor Rope" example for this step.
+</Callout>
 </DocBlock>
 
 <DocBlock anchor="const-vs-let-decision" kind="example" title="Choosing between const and let">
@@ -97,17 +89,9 @@ treasure = { gems: 4 }; // TypeError
 Changing object properties is allowed, but reassigning the variable is not.
 </Callout>
 
-<Playground
-  title="Mutation vs Reassignment"
-  showPreview={false}
-  files={[
-    { name: "main.js", language: "js", content: `const settings = { theme: "forest" };
-settings.theme = "night";
-console.log(\`theme: \${settings.theme}\`);
-// Uncomment to see the error:
-// settings = {};`},
-  ]}
-/>
+<Callout kind="note" title="Try this in CODE">
+Open the CODE panel to run the "Mutation vs Reassignment" example for this step.
+</Callout>
 </DocBlock>
 
 <DocBlock anchor="const-with-objects-arrays" kind="example" title="const with objects and arrays">

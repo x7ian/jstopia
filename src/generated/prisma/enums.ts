@@ -39,7 +39,8 @@ export type HelpUsed = (typeof HelpUsed)[keyof typeof HelpUsed]
 export const QuestionPhase = {
   micro: 'micro',
   quiz: 'quiz',
-  boss: 'boss'
+  boss: 'boss',
+  sample: 'sample'
 } as const
 
 export type QuestionPhase = (typeof QuestionPhase)[keyof typeof QuestionPhase]

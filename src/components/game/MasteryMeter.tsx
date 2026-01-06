@@ -13,12 +13,11 @@ export function MasteryMeter({ valueHalfSteps, maxHalfSteps = 10 }: MasteryMeter
   const clamped = clamp(valueHalfSteps, 0, maxHalfSteps)
   const segments = Math.ceil(maxHalfSteps / 2)
   const mastery = clamped / 2
-  const masteryText = `${mastery.toFixed(mastery % 1 === 0 ? 0 : 1)}/${segments}`
+  const masteryText = `${mastery.toFixed(mastery % 1 === 0 ? 0 : 1)}/${segments} PIPS`
 
   return (
     <div className="flex items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-[color:var(--muted)]">
-      <span>Mastery</span>
-      <div className="grid flex-1 grid-cols-5 gap-1.5">
+      <div className="flex flex-1 gap-1.5">
         {Array.from({ length: segments }).map((_, index) => {
           const segmentValue = clamp(clamped - index * 2, 0, 2)
           const fillClass =
@@ -30,7 +29,7 @@ export function MasteryMeter({ valueHalfSteps, maxHalfSteps = 10 }: MasteryMeter
           return (
             <div
               key={`segment-${index}`}
-              className="relative h-2 overflow-hidden rounded-full border border-[color:var(--border)] bg-[color:var(--panel)]"
+              className="relative h-2 flex-1 overflow-hidden rounded-full border border-[color:var(--border)] bg-[color:var(--panel)]"
             >
               <div
                 className={cn(
@@ -42,7 +41,7 @@ export function MasteryMeter({ valueHalfSteps, maxHalfSteps = 10 }: MasteryMeter
           )
         })}
       </div>
-      <span className="text-[color:var(--text)]">{masteryText}</span>
+      <span className="shrink-0 text-right text-[color:var(--text)]">{masteryText}</span>
     </div>
   )
 }

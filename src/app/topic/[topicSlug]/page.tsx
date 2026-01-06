@@ -44,6 +44,23 @@ export default async function TopicPage(props: { params: Promise<{ topicSlug: st
       })
     : 0
 
+  const taskQuestionIds = topic.docPage?.blocks
+    .map((block) => block.taskQuestionId)
+    .filter((id): id is number => typeof id === 'number') ?? []
+
+  const taskQuestions = taskQuestionIds.length
+    ? await prisma.question.findMany({
+        where: { id: { in: taskQuestionIds } },
+        select: {
+          id: true,
+          type: true,
+          phase: true,
+          filesJson: true,
+          expectedJson: true,
+        },
+      })
+    : []
+
   const chapterTopics = topic.chapter.topics
   const currentIndex = chapterTopics.findIndex((item) => item.id === topic.id)
   const nextTopic = currentIndex >= 0 ? chapterTopics[currentIndex + 1] : null
@@ -90,6 +107,13 @@ export default async function TopicPage(props: { params: Promise<{ topicSlug: st
           taskQuestionId: block.taskQuestionId ?? null,
         })) ?? []
       }
+      taskQuestions={taskQuestions.map((question) => ({
+        id: question.id,
+        type: question.type,
+        phase: question.phase,
+        filesJson: question.filesJson as any,
+        expectedJson: question.expectedJson as any,
+      }))}
       microQuestions={microQuestions.map((question) => ({
         id: question.id,
         prompt: question.prompt,

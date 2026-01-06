@@ -1,6 +1,6 @@
 export type Difficulty = 'basic' | 'medium' | 'advanced'
 export type HelpUsed = 'none' | 'tip' | 'doc'
-export type QuestionPhase = 'micro' | 'quiz' | 'boss'
+export type QuestionPhase = 'micro' | 'quiz' | 'boss' | 'sample'
 
 const baseScoreByDifficulty: Record<Difficulty, number> = {
   basic: 100,
@@ -38,6 +38,7 @@ export function computeScoreAwarded(params: {
   helpUsed: HelpUsed
 }) {
   if (!params.correct) return 0
+  if (params.phase === 'sample') return 0
   const table = params.phase === 'micro' ? microScore : quizScore
   return table[params.helpUsed] ?? 0
 }
